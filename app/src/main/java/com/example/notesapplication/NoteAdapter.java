@@ -33,6 +33,8 @@ public class NoteAdapter extends FirestoreRecyclerAdapter<Note, NoteAdapter.Note
             Intent intent = new Intent(context,NoteDetailsActivity.class);
             intent.putExtra("title",note.title);
             intent.putExtra("content",note.content);
+            intent.putExtra("date",note.date);
+            intent.putExtra("time",note.time);
             String docId = this.getSnapshots().getSnapshot(position).getId();
             intent.putExtra("docId",docId);
             context.startActivity(intent);
