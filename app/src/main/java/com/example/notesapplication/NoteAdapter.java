@@ -48,7 +48,6 @@ public class NoteAdapter extends FirestoreRecyclerAdapter<Note, NoteAdapter.Note
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.recycler_note_item,parent,false);
         return new NoteViewHolder(view);
     }
-
     class NoteViewHolder extends RecyclerView.ViewHolder{
         TextView titleTextView,contentTextView,timestampTextView;
 

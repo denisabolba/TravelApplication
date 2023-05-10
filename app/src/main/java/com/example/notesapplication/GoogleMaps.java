@@ -51,6 +51,8 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.karumi.dexter.Dexter;
 import com.karumi.dexter.PermissionToken;
 import com.karumi.dexter.listener.PermissionDeniedResponse;
@@ -62,7 +64,9 @@ import org.checkerframework.checker.units.qual.A;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class GoogleMaps extends AppCompatActivity implements OnMapReadyCallback {
 
@@ -75,6 +79,7 @@ public class GoogleMaps extends AppCompatActivity implements OnMapReadyCallback 
     private FusedLocationProviderClient fusedLocationProviderClient;
     private Marker marker;
     private MarkerOptions markerOptions;
+    Button btnSave;
 
 
 
@@ -87,11 +92,14 @@ public class GoogleMaps extends AppCompatActivity implements OnMapReadyCallback 
         Latitude = findViewById(R.id.Latitude);
         Longitude = findViewById(R.id.Longitude);
         searchEdt = findViewById(R.id.searchEdt);
+        btnSave = findViewById(R.id.btnSave);
 
         mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
         mapInitialize();
+
+
 
     }
 
@@ -201,6 +209,15 @@ public class GoogleMaps extends AppCompatActivity implements OnMapReadyCallback 
                         permissionToken.continuePermissionRequest();
                     }
                 }).check();
+        btnSave.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                 String l = Latitude.getText().toString();
+                 Intent intent = new Intent(GoogleMaps.this,NoteDetailsActivity.class);
+                 intent.putExtra("key",l);
+                 finish();
+            }
+        });
 
         if(nMap != null){
             nMap.setOnMarkerDragListener(new GoogleMap.OnMarkerDragListener() {

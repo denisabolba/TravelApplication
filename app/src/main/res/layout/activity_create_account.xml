@@ -56,7 +56,7 @@
             android:hint="Email Id"
             android:textSize="20sp"
             android:background="@drawable/rounded_corner"
-            android:padding="16dp"
+            android:padding="10dp"
             android:layout_marginTop="12dp"
             />
         <EditText
@@ -67,7 +67,7 @@
             android:hint="Password"
             android:textSize="20sp"
             android:background="@drawable/rounded_corner"
-            android:padding="16dp"
+            android:padding="10dp"
             android:layout_marginTop="12dp"
             />
 
@@ -79,15 +79,33 @@
             android:hint="Confirm Password"
             android:textSize="20sp"
             android:background="@drawable/rounded_corner"
-            android:padding="16dp"
+            android:padding="10dp"
+            android:layout_marginTop="12dp"
+            />
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/contact_edit_text"
+            android:hint="Contact"
+            android:textSize="20sp"
+            android:background="@drawable/rounded_corner"
+            android:padding="10dp"
             android:layout_marginTop="12dp"
             />
 
         <com.google.android.material.button.MaterialButton
             android:layout_width="match_parent"
             android:id="@+id/create_account_btn"
-            android:layout_height="64dp"
+            android:layout_height="50dp"
             android:text="Create Account"
+            android:layout_marginTop="12dp"
+            android:textSize="16sp"
+            />
+        <com.google.android.material.button.MaterialButton
+            android:layout_width="match_parent"
+            android:id="@+id/save_data_btn"
+            android:layout_height="50dp"
+            android:text="Save data"
             android:layout_marginTop="12dp"
             android:textSize="16sp"
             />

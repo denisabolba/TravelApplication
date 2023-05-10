@@ -47,11 +47,11 @@ public class NoteDetailsActivity extends AppCompatActivity {
 
     private static final String TAG = "GoogleMaps";
     private static final int ERROR_DIALOG_REQUEST = 9001;
-    EditText titleEditText, contentEditText, dateEditText, timeEditText;
+    EditText titleEditText, contentEditText, dateEditText, timeEditText, latitudeEditText;
     ImageButton saveNoteButton, dateNoteButton, timeNoteButton;
     Button btnNotification;
     TextView pageTitleTextView, deleteNoteTextViewBtn;
-    String date, time, title, content, docId;
+    String date, time, title, content, docId,location;
     boolean isEditMode = false;
     Calendar calendar = Calendar.getInstance();
     int currentHour = calendar.get(Calendar.HOUR);
@@ -80,12 +80,21 @@ public class NoteDetailsActivity extends AppCompatActivity {
         timeEditText = findViewById(R.id.notes_time_text);
         timeNoteButton = findViewById(R.id.time_note_btn);
         btnNotification = findViewById(R.id.btnNotification);
+        latitudeEditText = findViewById(R.id.location_text);
 
         //receive data
         title = getIntent().getStringExtra("title");
         content = getIntent().getStringExtra("content");
         date = getIntent().getStringExtra("date");
         time = getIntent().getStringExtra("time");
+
+        String l = getIntent().getStringExtra("key");
+        if(l == null || l.isEmpty()){
+            latitudeEditText.setText(location);
+        } else{
+            latitudeEditText.setText(l);
+        }
+
         docId = getIntent().getStringExtra("docId");
 
         if (docId != null && !docId.isEmpty()) {
@@ -243,6 +252,7 @@ public class NoteDetailsActivity extends AppCompatActivity {
         String noteContent = contentEditText.getText().toString();
         String noteTime = timeEditText.getText().toString();
         String noteDate = dateEditText.getText().toString();
+        String noteLocation = latitudeEditText.getText().toString();
 
         if(noteTitle == null || noteTitle.isEmpty()){
             titleEditText.setError("Title is required");
@@ -254,6 +264,7 @@ public class NoteDetailsActivity extends AppCompatActivity {
         note.setContent(noteContent);
         note.setDate(noteDate);
         note.setTime(noteTime);
+        note.setLocation(noteLocation);
         note.setTimestamp(Timestamp.now());
 
 

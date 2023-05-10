@@ -103,6 +103,13 @@
                 android:text=""
                 android:textSize="16sp"/>
         </LinearLayout>
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/btnSave"
+            android:textSize="18sp"
+            android:text="Save Location"
+            />
 
 
     </LinearLayout>
