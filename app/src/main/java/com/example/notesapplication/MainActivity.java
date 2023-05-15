@@ -40,6 +40,7 @@ public class MainActivity extends AppCompatActivity {
         PopupMenu popupMenu  = new PopupMenu(MainActivity.this,menuBtn);
         popupMenu.getMenu().add("Logout");
         popupMenu.getMenu().add("Profile");
+        popupMenu.getMenu().add("Contact Support");
         popupMenu.show();
         popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
             @Override
@@ -52,7 +53,10 @@ public class MainActivity extends AppCompatActivity {
                 }
                 if(menuItem.getTitle()=="Profile"){
                     startActivity(new Intent(MainActivity.this,ProfileActivity.class));
-                    finish();
+                    return true;
+                }
+                if(menuItem.getTitle()=="Contact Support"){
+                    startActivity(new Intent(MainActivity.this,ContactSupportActivity.class));
                     return true;
                 }
                 return false;

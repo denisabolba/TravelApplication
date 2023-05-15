@@ -12,6 +12,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -57,6 +58,7 @@ public class LoginActivity extends AppCompatActivity {
 
     void loginAccountInFirebase(String email,String password){
         FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
+
         changeInProgress(true);
         firebaseAuth.signInWithEmailAndPassword(email,password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
             @Override
@@ -64,13 +66,17 @@ public class LoginActivity extends AppCompatActivity {
                 changeInProgress(false);
                 if(task.isSuccessful()){
                     //login is success
-                    if(firebaseAuth.getCurrentUser().isEmailVerified()){
+                    /*if(firebaseAuth.getCurrentUser().isEmailVerified()){
                         //go to mainactivity
                         startActivity(new Intent(LoginActivity.this,MainActivity.class));
                         finish();
                     }else{
                         Utility.showToast(LoginActivity.this,"Email not verified, Please verify your email.");
-                    }
+                    }*/
+                    String userId = firebaseAuth.getUid();
+                    Toast.makeText(LoginActivity.this, userId, Toast.LENGTH_SHORT).show();
+                    startActivity(new Intent(LoginActivity.this,MainActivity2.class));
+                    finish();
 
                 }else{
                     //login failed

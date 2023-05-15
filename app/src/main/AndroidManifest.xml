@@ -18,6 +18,15 @@
         android:theme="@style/Theme.NotesApplication"
         tools:targetApi="31">
         <activity
+            android:name=".Setting"
+            android:exported="false" />
+        <activity
+            android:name=".chatWin"
+            android:exported="false" />
+        <activity
+            android:name=".MainActivity2"
+            android:exported="false" />
+        <activity
             android:name=".ContactSupportActivity"
             android:exported="false" />
         <activity
