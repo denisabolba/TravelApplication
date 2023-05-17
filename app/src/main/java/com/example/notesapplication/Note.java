@@ -8,13 +8,31 @@ public class Note {
     Timestamp timestamp;
     String date;
     String time;
+    String currentDate;
     String location;
+
+    public String getCurrentDate() {
+        return currentDate;
+    }
+
+    public void setCurrentDate(String currentDate) {
+        this.currentDate = currentDate;
+    }
 
     public String getLocation() {
         return location;
     }
 
     public void setLocation(String location) {
+        this.location = location;
+    }
+
+    public Note(String title, String content, String date, String time,String currentDate,String location) {
+        this.title = title;
+        this.content = content;
+        this.date = date;
+        this.time = time;
+        this.currentDate = currentDate;
         this.location = location;
     }
 

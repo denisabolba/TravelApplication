@@ -1,39 +1,117 @@
 package com.example.notesapplication;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.view.GravityCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.TestLooperManager;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.ImageButton;
 import android.widget.PopupMenu;
+import android.widget.TextView;
+import android.widget.Toolbar;
 
-import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.firestore.Query;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+
+import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
 
     FloatingActionButton addNoteBtn;
     RecyclerView recyclerView;
+    ArrayList<Note> noteArrayList;
+    ArrayList<String> noteIdList;
     ImageButton menuBtn;
     NoteAdapter noteAdapter;
+    private DrawerLayout drawerLayout;
+    private ActionBarDrawerToggle drawerToggle;
+    private  NavigationView navigationView;
+    Toolbar toolbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        drawerLayout = findViewById(R.id.drawer_layout);
+        drawerToggle = new ActionBarDrawerToggle(this, drawerLayout, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+        drawerLayout.addDrawerListener(drawerToggle);
+        drawerToggle.syncState();
+
+        navigationView = findViewById(R.id.nav_view);
+        navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                int id = item.getItemId();
+
+                if (id == R.id.nav_home) {
+                    // Handle the Home menu item action
+                    Intent intent = new Intent(MainActivity.this, MainActivity2.class);
+                    startActivity(intent);
+                    drawerLayout.closeDrawer(GravityCompat.START); // Close the drawer after handling the item selection
+                    return true;
+                }
+                // Handle other menu item actions if required
+
+                return false;
+            }
+        });
+
+
         addNoteBtn = findViewById(R.id.add_note_btn);
         recyclerView = findViewById(R.id.recyler_view);
         menuBtn = findViewById(R.id.menu_btn);
 
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        FirebaseAuth auth = FirebaseAuth.getInstance();
+
+        DatabaseReference reference = database.getReference().child("notes").child(auth.getCurrentUser().getUid()).child("my_notes");
+
+        noteArrayList = new ArrayList<>();
+        noteIdList = new  ArrayList<>();
+
+        recyclerView = findViewById(R.id.recyler_view);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        noteAdapter = new NoteAdapter(MainActivity.this,noteArrayList,noteIdList);
+        recyclerView.setAdapter(noteAdapter);
+
+        reference.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                noteArrayList.clear();
+                noteIdList.clear();
+                for(DataSnapshot dataSnapshot: snapshot.getChildren()){
+                    String noteIdToUpdate = dataSnapshot.getKey();
+                    noteIdList.add(noteIdToUpdate);
+
+                    Note note = dataSnapshot.getValue(Note.class);
+                    noteArrayList.add(note);
+                }
+                noteAdapter.notifyDataSetChanged();
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+
         addNoteBtn.setOnClickListener((v)-> startActivity(new Intent(MainActivity.this,NoteDetailsActivity.class)) );
         menuBtn.setOnClickListener((v)->showMenu() );
-        setupRecyclerView();
     }
 
     void showMenu(){
@@ -65,30 +143,4 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    void setupRecyclerView(){
-        Query query  = Utility.getCollectionReferenceForNotes().orderBy("timestamp",Query.Direction.DESCENDING);
-        FirestoreRecyclerOptions<Note> options = new FirestoreRecyclerOptions.Builder<Note>()
-                .setQuery(query,Note.class).build();
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        noteAdapter = new NoteAdapter(options,this);
-        recyclerView.setAdapter(noteAdapter);
-    }
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-        noteAdapter.startListening();
-    }
-
-    @Override
-    protected void onStop() {
-        super.onStop();
-        noteAdapter.stopListening();
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        noteAdapter.notifyDataSetChanged();
-    }
 }

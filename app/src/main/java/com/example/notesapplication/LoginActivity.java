@@ -75,7 +75,7 @@ public class LoginActivity extends AppCompatActivity {
                     }*/
                     String userId = firebaseAuth.getUid();
                     Toast.makeText(LoginActivity.this, userId, Toast.LENGTH_SHORT).show();
-                    startActivity(new Intent(LoginActivity.this,MainActivity2.class));
+                    startActivity(new Intent(LoginActivity.this,MainActivity.class));
                     finish();
 
                 }else{

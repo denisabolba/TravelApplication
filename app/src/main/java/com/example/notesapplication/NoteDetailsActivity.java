@@ -37,17 +37,30 @@ import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.Timestamp;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.storage.StorageReference;
+import com.squareup.picasso.Picasso;
 
 import org.w3c.dom.Document;
 
+import java.time.LocalDate;
 import java.util.Calendar;
+import java.util.HashMap;
+import java.util.Objects;
 
 public class NoteDetailsActivity extends AppCompatActivity {
 
     private static final String TAG = "GoogleMaps";
     private static final int ERROR_DIALOG_REQUEST = 9001;
-    EditText titleEditText, contentEditText, dateEditText, timeEditText, latitudeEditText;
+    private static final int SECOND_ACTIVITY_REQUEST_CODE = 1;
+    EditText titleEditText, contentEditText, dateEditText, timeEditText, locationEditText;
     ImageButton saveNoteButton, dateNoteButton, timeNoteButton;
     Button btnNotification;
     TextView pageTitleTextView, deleteNoteTextViewBtn;
@@ -60,6 +73,7 @@ public class NoteDetailsActivity extends AppCompatActivity {
     int currentMonth = calendar.get(Calendar.MONTH);
     int currentDay = calendar.get(Calendar.DAY_OF_MONTH);
     final Calendar myCalendar = Calendar.getInstance();
+    Timestamp timestamp;
 
 
     @Override
@@ -80,20 +94,12 @@ public class NoteDetailsActivity extends AppCompatActivity {
         timeEditText = findViewById(R.id.notes_time_text);
         timeNoteButton = findViewById(R.id.time_note_btn);
         btnNotification = findViewById(R.id.btnNotification);
-        latitudeEditText = findViewById(R.id.location_text);
+        locationEditText = findViewById(R.id.location_text);
 
-        //receive data
-        title = getIntent().getStringExtra("title");
-        content = getIntent().getStringExtra("content");
-        date = getIntent().getStringExtra("date");
-        time = getIntent().getStringExtra("time");
-
-        String l = getIntent().getStringExtra("key");
-        if(l == null || l.isEmpty()){
-            latitudeEditText.setText(location);
-        } else{
-            latitudeEditText.setText(l);
-        }
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
+        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+        String userId = currentUser.getUid();
 
         docId = getIntent().getStringExtra("docId");
 
@@ -101,10 +107,88 @@ public class NoteDetailsActivity extends AppCompatActivity {
             isEditMode = true;
         }
 
-        titleEditText.setText(title);
-        contentEditText.setText(content);
-        dateEditText.setText(date);
-        timeEditText.setText(time);
+        if (isEditMode) {
+            pageTitleTextView.setText("Edit your note");
+            deleteNoteTextViewBtn.setVisibility(View.VISIBLE);
+
+            DatabaseReference reference = database.getReference().child("notes").child(userId).child("my_notes");
+            reference.addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+
+                        title = getIntent().getStringExtra("title");
+                        content = getIntent().getStringExtra("content");
+                        date = getIntent().getStringExtra("date");
+                        time = getIntent().getStringExtra("time");
+                        location = getIntent().getStringExtra("location");
+
+                        titleEditText.setText(title);
+                        contentEditText.setText(content);
+                        dateEditText.setText(date);
+                        timeEditText.setText(time);
+                        locationEditText.setText(location);
+
+                }
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
+
+                }
+            });
+        }
+
+
+        saveNoteButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+
+                String noteTitle = titleEditText.getText().toString();
+                String noteContent = contentEditText.getText().toString();
+                String noteTime = timeEditText.getText().toString();
+                String noteDate = dateEditText.getText().toString();
+                String formattedDate = String.format("%02d/%02d/%04d %02d:%02d", currentMonth,currentDay,currentYear,currentHour,currentMinute);
+                String noteLocation = locationEditText.getText().toString();
+                Note note = new Note(noteTitle,noteContent,noteDate,noteTime,formattedDate,noteLocation);
+                DatabaseReference reference ;
+
+
+                if (isEditMode) {
+                    String noteIdToUpdate = getIntent().getStringExtra("noteIdToUpdate");
+                    reference = database.getReference().child("notes").child(userId).child("my_notes").child(noteIdToUpdate);
+
+                    reference.setValue(note)
+                            .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                @Override
+                                public void onComplete(@NonNull Task<Void> task) {
+                                    if (task.isSuccessful()) {
+                                        Toast.makeText(NoteDetailsActivity.this, "Note updated successfully", Toast.LENGTH_SHORT).show();
+                                        finish();
+                                    } else {
+                                        Toast.makeText(NoteDetailsActivity.this, task.getException().getLocalizedMessage(), Toast.LENGTH_SHORT).show();
+                                    }
+                                }
+                            });
+
+                } else {
+
+                    reference = database.getReference().child("notes").child(userId).child("my_notes");
+
+                    reference.push().setValue(note).addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        if(task.isSuccessful()){
+                            Toast.makeText(NoteDetailsActivity.this, "success", Toast.LENGTH_SHORT).show();
+                            finish();
+                        }else{
+                            Toast.makeText(NoteDetailsActivity.this,task.getException().getLocalizedMessage(), Toast.LENGTH_SHORT).show();
+                        }
+                    }
+
+                });
+
+            }}
+
+        });
 
         if (isEditMode) {
             pageTitleTextView.setText("Edit your note");
@@ -112,8 +196,8 @@ public class NoteDetailsActivity extends AppCompatActivity {
         }
 
 
-        saveNoteButton.setOnClickListener((v) -> saveNote());
-        deleteNoteTextViewBtn.setOnClickListener((v) -> deleteNoteFromFirebase());
+        // saveNoteButton.setOnClickListener((v) -> saveNote());
+        //deleteNoteTextViewBtn.setOnClickListener((v) -> deleteNoteFromFirebase());
 
 
         dateNoteButton.setOnClickListener((v) -> chooseDate());
@@ -203,11 +287,28 @@ public class NoteDetailsActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(NoteDetailsActivity.this,GoogleMaps.class);
-                startActivity(intent);
+                startActivityForResult(intent, SECOND_ACTIVITY_REQUEST_CODE);
+                //startActivity(intent);
+                //latitudeEditText.setText(getIntent().getStringExtra("key"));
             }
         });
     }
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
 
+        if (requestCode == SECOND_ACTIVITY_REQUEST_CODE) {
+            if (resultCode == RESULT_OK) {
+                // Data successfully returned from the second activity
+                String value = data.getStringExtra("key"); // Retrieve the data from the intent extras
+                locationEditText.setText(value);
+
+                // Use the data as needed
+            } else if (resultCode == RESULT_CANCELED) {
+                // Handle if the second activity was canceled or no data was returned
+            }
+        }
+    }
     public boolean isServicesOK(){
         Log.d(TAG,"isServicesOK: checking google services version");
 
@@ -252,7 +353,7 @@ public class NoteDetailsActivity extends AppCompatActivity {
         String noteContent = contentEditText.getText().toString();
         String noteTime = timeEditText.getText().toString();
         String noteDate = dateEditText.getText().toString();
-        String noteLocation = latitudeEditText.getText().toString();
+        String noteLocation = locationEditText.getText().toString();
 
         if(noteTitle == null || noteTitle.isEmpty()){
             titleEditText.setError("Title is required");
@@ -264,7 +365,7 @@ public class NoteDetailsActivity extends AppCompatActivity {
         note.setContent(noteContent);
         note.setDate(noteDate);
         note.setTime(noteTime);
-        note.setLocation(noteLocation);
+       // note.setLocation(noteLocation);
         note.setTimestamp(Timestamp.now());
 
 

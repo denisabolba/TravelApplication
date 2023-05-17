@@ -1,39 +1,25 @@
 package com.example.notesapplication;
 
-import static java.security.AccessController.getContext;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
-
 import android.Manifest;
-import android.app.Dialog;
-import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.KeyEvent;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
-import android.view.WindowManager;
 import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageView;
-import android.widget.SearchView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.GoogleApiAvailability;
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+
+import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
@@ -47,12 +33,16 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.android.libraries.places.api.Places;
+import com.google.android.libraries.places.api.model.AutocompleteSessionToken;
+import com.google.android.libraries.places.api.model.Place;
+import com.google.android.libraries.places.api.model.TypeFilter;
+import com.google.android.libraries.places.api.net.PlacesClient;
+import com.google.android.libraries.places.widget.AutocompleteSupportFragment;
+
+import com.google.android.libraries.places.widget.listener.PlaceSelectionListener;
 import com.karumi.dexter.Dexter;
 import com.karumi.dexter.PermissionToken;
 import com.karumi.dexter.listener.PermissionDeniedResponse;
@@ -60,13 +50,10 @@ import com.karumi.dexter.listener.PermissionGrantedResponse;
 import com.karumi.dexter.listener.PermissionRequest;
 import com.karumi.dexter.listener.single.PermissionListener;
 
-import org.checkerframework.checker.units.qual.A;
-
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 
 public class GoogleMaps extends AppCompatActivity implements OnMapReadyCallback {
 
@@ -81,6 +68,7 @@ public class GoogleMaps extends AppCompatActivity implements OnMapReadyCallback 
     private MarkerOptions markerOptions;
     Button btnSave;
 
+    String saveLocation;
 
 
 
@@ -97,9 +85,10 @@ public class GoogleMaps extends AppCompatActivity implements OnMapReadyCallback 
         mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
+        String API_key = getString(R.string.API_key);
+        Places.initialize(getApplicationContext(),API_key);
+
         mapInitialize();
-
-
 
     }
 
@@ -136,7 +125,12 @@ public class GoogleMaps extends AppCompatActivity implements OnMapReadyCallback 
                 }
                 if(list.size()>0){
                     Address address = list.get(0);
-                    String location = address.getAdminArea();
+                    String location = address.getLocality();
+                    saveLocation = location;
+
+                    Intent intent = new Intent(GoogleMaps.this,NoteDetailsActivity.class);
+                    intent.putExtra("location",location);
+
                     double latitude = address.getLatitude();
                     double longitude = address.getLongitude();
                     goToLatLang(latitude,longitude,17f);
@@ -212,9 +206,10 @@ public class GoogleMaps extends AppCompatActivity implements OnMapReadyCallback 
         btnSave.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                 String l = Latitude.getText().toString();
-                 Intent intent = new Intent(GoogleMaps.this,NoteDetailsActivity.class);
-                 intent.putExtra("key",l);
+                // String l = Latitude.getText().toString();
+                 Intent intent = new Intent();
+                 intent.putExtra("key", saveLocation); // Put your data in the intent extras
+                 setResult(RESULT_OK, intent);
                  finish();
             }
         });
@@ -238,6 +233,7 @@ public class GoogleMaps extends AppCompatActivity implements OnMapReadyCallback 
                         Longitude.setText(String.valueOf(markerPosition.longitude));
                         Address address = list.get(0);
                         marker.setTitle(address.getAdminArea());
+                        saveLocation = address.getAdminArea();
                     } catch (IOException e) {
                         throw new RuntimeException(e);
                     }

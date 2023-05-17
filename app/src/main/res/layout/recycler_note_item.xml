@@ -28,12 +28,12 @@
         android:layout_marginVertical="4dp"/>
 
     <TextView
+        android:id="@+id/note_timestamp_text_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/note_timestamp_text_view"
-        android:text="note title"
-        android:textSize="12sp"
+        android:layout_marginVertical="4dp"
         android:gravity="right"
-        android:layout_marginVertical="4dp"/>
+        android:text="note title"
+        android:textSize="12sp" />
 
 </LinearLayout>
