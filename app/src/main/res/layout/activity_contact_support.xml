@@ -14,7 +14,7 @@
         android:id="@+id/email"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Email" />
+        android:hint="contactsupport@travelparteners.com" />
 
     <EditText
         android:id="@+id/subject"

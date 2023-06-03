@@ -8,16 +8,22 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.app.Dialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.TestLooperManager;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.PopupMenu;
 import android.widget.TextView;
+import android.widget.Toast;
 import android.widget.Toolbar;
 
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
@@ -26,8 +32,10 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.firestore.auth.User;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -35,6 +43,7 @@ public class MainActivity extends AppCompatActivity {
     RecyclerView recyclerView;
     ArrayList<Note> noteArrayList;
     ArrayList<String> noteIdList;
+
     ImageButton menuBtn;
     NoteAdapter noteAdapter;
     private DrawerLayout drawerLayout;
@@ -57,13 +66,52 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 int id = item.getItemId();
-
-                if (id == R.id.nav_home) {
-                    // Handle the Home menu item action
-                    Intent intent = new Intent(MainActivity.this, MainActivity2.class);
-                    startActivity(intent);
-                    drawerLayout.closeDrawer(GravityCompat.START); // Close the drawer after handling the item selection
-                    return true;
+                switch (id) {
+                    case R.id.nav_home:
+                        // Handle Home selection
+                        Intent intent = new Intent(MainActivity.this, MainActivity2.class);
+                        startActivity(intent);
+                        drawerLayout.closeDrawer(GravityCompat.START); // Close the drawer after handling the item selection
+                        return true;
+                    case R.id.nav_notes:
+                        startActivity(new Intent(MainActivity.this, MainActivity.class));
+                        drawerLayout.closeDrawer(GravityCompat.START);
+                        return true;
+                    case R.id.nav_chat:
+                        startActivity(new Intent(MainActivity.this, MainActivity2.class));
+                        drawerLayout.closeDrawer(GravityCompat.START);
+                        return true;
+                    case R.id.nav_profile:
+                        startActivity(new Intent(MainActivity.this, ProfileActivity.class));
+                        drawerLayout.closeDrawer(GravityCompat.START);
+                        return true;
+                    case R.id.nav_logout:
+                        Dialog dialog = new Dialog(MainActivity.this);
+                        dialog.setContentView(R.layout.dialog_layout);
+                        Button no, yes;
+                        yes = dialog.findViewById(R.id.yesbnt);
+                        no = dialog.findViewById(R.id.nobnt);
+                        yes.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                FirebaseAuth.getInstance().signOut();
+                                Intent intent = new Intent(MainActivity.this,LoginActivity.class);
+                                startActivity(intent);
+                            }
+                        });
+                        no.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                dialog.dismiss();
+                            }
+                        });
+                        dialog.show();
+                        drawerLayout.closeDrawer(GravityCompat.START);
+                        return true;
+                    case R.id.nav_contact:
+                        startActivity(new Intent(MainActivity.this, ContactSupportActivity.class));
+                        drawerLayout.closeDrawer(GravityCompat.START);
+                        return true;
                 }
                 // Handle other menu item actions if required
 
@@ -89,7 +137,47 @@ public class MainActivity extends AppCompatActivity {
         noteAdapter = new NoteAdapter(MainActivity.this,noteArrayList,noteIdList);
         recyclerView.setAdapter(noteAdapter);
 
-        reference.addValueEventListener(new ValueEventListener() {
+        DatabaseReference notesRef = database.getReference().child("notes");
+
+        notesRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                noteArrayList.clear();
+                noteIdList.clear();
+
+                // Retrieve user's own notes
+                DatabaseReference myNotesRef = notesRef.child(auth.getCurrentUser().getUid()).child("my_notes");
+                myNotesRef.addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        for (DataSnapshot noteSnapshot : dataSnapshot.getChildren()) {
+                            String noteIdToUpdate = noteSnapshot.getKey();
+                            noteIdList.add(noteIdToUpdate);
+
+                            Note note = noteSnapshot.getValue(Note.class);
+                            noteArrayList.add(note);
+                        }
+
+                        noteAdapter.notifyDataSetChanged();
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+                        // Handle the error
+                    }
+                });
+
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                // Handle the error
+            }
+        });
+
+
+     /* reference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 noteArrayList.clear();
@@ -100,6 +188,7 @@ public class MainActivity extends AppCompatActivity {
 
                     Note note = dataSnapshot.getValue(Note.class);
                     noteArrayList.add(note);
+
                 }
                 noteAdapter.notifyDataSetChanged();
             }
@@ -109,6 +198,54 @@ public class MainActivity extends AppCompatActivity {
 
             }
         });
+
+
+        DatabaseReference sharedNotesRef = database.getReference().child("notes")
+                .child(auth.getCurrentUser().getUid())
+                .child("shared_notes");
+
+        sharedNotesRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
+                    String noteIdToUpdatex = dataSnapshot.getKey();
+                    String[] substrings = noteIdToUpdatex.split(" ");
+
+// Access the individual substrings
+                    String substringNoteId = substrings[0]; // "abc"
+                    String substringUserId = substrings[1];
+                    DatabaseReference noteRef = database.getReference().child("notes").child(substringUserId).child("my_notes");
+                    noteRef.addValueEventListener(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot snapshot) {
+                            for(DataSnapshot dataSnapshot: snapshot.getChildren()){
+                                String noteIdToUpdate2 = dataSnapshot.getKey();
+                                if(noteIdToUpdate2.equals(substringNoteId)) {
+                                    noteIdList.add(noteIdToUpdate2);
+
+                                    Note note = dataSnapshot.getValue(Note.class);
+                                    noteArrayList.add(note);
+                                }
+                            }
+                            noteAdapter.notifyDataSetChanged();
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError error) {
+
+                        }
+                    });
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                // Handle the error
+            }
+        });*/
+
+
+
 
         addNoteBtn.setOnClickListener((v)-> startActivity(new Intent(MainActivity.this,NoteDetailsActivity.class)) );
         menuBtn.setOnClickListener((v)->showMenu() );

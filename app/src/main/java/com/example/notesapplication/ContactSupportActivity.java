@@ -23,10 +23,16 @@ public class ContactSupportActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_contact_support);
 
+
+
+
         email = findViewById(R.id.email);
         subject = findViewById(R.id.subject);
         message = findViewById(R.id.message);
         button = findViewById(R.id.btn);
+
+        email.setEnabled(false);
+
 
         button.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -40,7 +46,7 @@ public class ContactSupportActivity extends AppCompatActivity {
     }
 
     private void sendEmail() {
-        String mEmail = email.getText().toString();
+        String mEmail = "denisabolba27@gmail.com";
         String mSubject = subject.getText().toString();
         String mMessage = message.getText().toString();
 

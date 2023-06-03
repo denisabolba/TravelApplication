@@ -21,6 +21,7 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -32,10 +33,13 @@ import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 import com.squareup.picasso.Picasso;
 
+import de.hdodenhof.circleimageview.CircleImageView;
+
 public class Setting extends AppCompatActivity {
-    ImageView setprofile;
-    EditText setname, setstatus,setcontact;
-    Button donebut;
+
+    CircleImageView setprofile;
+    EditText setname, setstatus,setcontact,setusername;
+    Button donebut,delete_btn;
     FirebaseAuth auth;
     FirebaseDatabase database;
     FirebaseStorage storage;
@@ -57,10 +61,12 @@ public class Setting extends AppCompatActivity {
         setname = findViewById(R.id.settingname);
         setstatus = findViewById(R.id.settingstatus);
         setcontact = findViewById(R.id.settingcontact);
+        setusername = findViewById(R.id.settingusername);
         donebut = findViewById(R.id.donebutt);
+        delete_btn = findViewById(R.id.delete_btn);
 
         progressDialog = new ProgressDialog(this);
-        progressDialog.setMessage("Saing...");
+        progressDialog.setMessage("Saving...");
         progressDialog.setCancelable(false);
 
         DatabaseReference reference = database.getReference().child("user").child(auth.getCurrentUser().getUid());
@@ -77,6 +83,7 @@ public class Setting extends AppCompatActivity {
                 setname.setText(name);
                 setstatus.setText(status);
                 setcontact.setText(contact);
+                setusername.setText(name);
 
                 Picasso.get().load(profile).into(setprofile);
             }
@@ -120,12 +127,12 @@ public class Setting extends AppCompatActivity {
                                             if (task.isSuccessful()){
                                                 progressDialog.dismiss();
                                                 Toast.makeText(Setting.this, "Data Is save ", Toast.LENGTH_SHORT).show();
-                                                Intent intent = new Intent(Setting.this,MainActivity.class);
+                                                Intent intent = new Intent(Setting.this,ProfileActivity.class);
                                                 startActivity(intent);
-                                                finish();
+                                                //finish();
                                             }else {
                                                 progressDialog.dismiss();
-                                                Toast.makeText(Setting.this, "Some thing went romg", Toast.LENGTH_SHORT).show();
+                                                Toast.makeText(Setting.this, "Some thing went wrong", Toast.LENGTH_SHORT).show();
                                             }
                                         }
                                     });
@@ -145,7 +152,7 @@ public class Setting extends AppCompatActivity {
                                     if (task.isSuccessful()){
                                         progressDialog.dismiss();
                                         Toast.makeText(Setting.this, "Data Is save ", Toast.LENGTH_SHORT).show();
-                                        Intent intent = new Intent(Setting.this,MainActivity2.class);
+                                        Intent intent = new Intent(Setting.this,ProfileActivity.class);
                                         startActivity(intent);
                                         finish();
                                     }else {
@@ -160,6 +167,62 @@ public class Setting extends AppCompatActivity {
 
             }
         });
+
+        delete_btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+                String userId = currentUser.getUid();
+                // Replace with the actual user ID
+
+// Delete the user's data from the Realtime Database
+                DatabaseReference userRef = FirebaseDatabase.getInstance().getReference()
+                        .child("notes")
+                        .child(userId); // Adjust the path according to your database structure
+
+                userRef.removeValue().addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        if (task.isSuccessful()) {
+                            // User's data deleted successfully
+                            DatabaseReference userRef = FirebaseDatabase.getInstance().getReference()
+                                    .child("user")
+                                    .child(userId);
+                            userRef.removeValue().addOnCompleteListener(new OnCompleteListener<Void>() {
+                                @Override
+                                public void onComplete(@NonNull Task<Void> task) {
+                                    // Proceed to delete the user from Firebase Authentication
+                                    FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+                                    if (user != null) {
+                                        user.delete().addOnCompleteListener(new OnCompleteListener<Void>() {
+                                            @Override
+                                            public void onComplete(@NonNull Task<Void> task) {
+                                                if (task.isSuccessful()) {
+                                                    // User deleted successfully
+                                                    Toast.makeText(Setting.this, "User deleted", Toast.LENGTH_SHORT).show();
+                                                    auth.signOut();
+                                                    startActivity(new Intent(Setting.this,LoginActivity.class));
+                                                    finish();
+                                                } else {
+                                                    // Error occurred while deleting the user
+                                                    Toast.makeText(Setting.this, "Failed to delete user", Toast.LENGTH_SHORT).show();
+                                                }
+                                            }
+                                        });
+                                    }
+                                }
+                            });
+
+                        } else {
+                            // Error occurred while deleting the user's data
+                            Toast.makeText(Setting.this, "Failed to delete user's data", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
+
+            }
+        });
+
     }
 
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
@@ -173,4 +236,6 @@ public class Setting extends AppCompatActivity {
 
 
     }
+
+
 }

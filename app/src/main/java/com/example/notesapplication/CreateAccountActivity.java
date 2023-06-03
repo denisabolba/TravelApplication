@@ -24,6 +24,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
@@ -54,7 +55,7 @@ public class CreateAccountActivity extends AppCompatActivity {
         loginBtnTextView = findViewById(R.id.login_text_view_btn);
         contactEditText = findViewById(R.id.contact_edit_text);
         usernameEditText = findViewById(R.id.username_edit_text);
-        saveDataBtn = findViewById(R.id.save_data_btn);
+        //saveDataBtn = findViewById(R.id.save_data_btn);
         profilePic = findViewById(R.id.profile_pic);
 
         //receive data
@@ -149,6 +150,9 @@ public class CreateAccountActivity extends AppCompatActivity {
                     String id = task.getResult().getUser().getUid();
                     DatabaseReference reference = database.getReference().child("user").child(id);
                     StorageReference storageReference = storage.getReference().child("Upload").child(id);
+
+
+
 
                     if(imageURI!=null){
                         storageReference.putFile(imageURI).addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>() {

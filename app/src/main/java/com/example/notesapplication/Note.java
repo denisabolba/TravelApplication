@@ -2,6 +2,8 @@ package com.example.notesapplication;
 
 import com.google.firebase.Timestamp;
 
+import java.util.ArrayList;
+
 public class Note {
     String title;
     String content;
@@ -10,6 +12,15 @@ public class Note {
     String time;
     String currentDate;
     String location;
+    ArrayList<String> sharedWith;
+
+    public ArrayList<String> getSharedWith() {
+        return sharedWith;
+    }
+
+    public void setSharedWith(ArrayList<String> sharedWith) {
+        this.sharedWith = sharedWith;
+    }
 
     public String getCurrentDate() {
         return currentDate;
@@ -27,7 +38,8 @@ public class Note {
         this.location = location;
     }
 
-    public Note(String title, String content, String date, String time,String currentDate,String location) {
+
+    public Note(String title, String content, String date, String time, String currentDate, String location) {
         this.title = title;
         this.content = content;
         this.date = date;

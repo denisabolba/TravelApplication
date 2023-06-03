@@ -10,7 +10,7 @@
         <item
             android:id="@+id/nav_notes"
             android:icon="@drawable/notes"
-            android:title="Notes" />
+            android:title="Trips" />
         <item
             android:id="@+id/nav_chat"
             android:icon="@drawable/ic_chat"
@@ -45,7 +45,7 @@
 
             <item
                 android:id="@+id/nav_contact"
-                android:title="Profile"
+                android:title="Contact support"
                 android:icon="@drawable/contact"/>
 
         </menu>

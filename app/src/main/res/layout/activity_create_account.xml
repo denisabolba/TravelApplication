@@ -7,13 +7,7 @@
     android:layout_marginVertical="16dp"
     android:layout_marginHorizontal="32dp"
     tools:context=".CreateAccountActivity">
-    <ImageView
-        android:layout_width="30dp"
-        android:layout_height="30dp"
-        android:layout_centerHorizontal="true"
-        android:layout_marginVertical="32dp"
-        android:id="@+id/sign_up_icon"
-        android:src="@drawable/sign_up"/>
+
 
     <de.hdodenhof.circleimageview.CircleImageView
         android:id="@+id/profile_pic"
@@ -31,7 +25,7 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/sign_up_icon"
+        android:layout_below="@id/profile_pic"
         android:id="@+id/hello_text"
         android:orientation="vertical">
 
@@ -58,7 +52,7 @@
         android:layout_height="wrap_content"
         android:id="@+id/form_layout"
         android:layout_below="@id/hello_text"
-        android:layout_marginVertical="32dp"
+        android:layout_marginVertical="3dp"
         android:orientation="vertical">
 
         <EditText
@@ -125,14 +119,7 @@
             android:layout_marginTop="12dp"
             android:textSize="16sp"
             />
-        <com.google.android.material.button.MaterialButton
-            android:layout_width="match_parent"
-            android:id="@+id/save_data_btn"
-            android:layout_height="50dp"
-            android:text="Save data"
-            android:layout_marginTop="12dp"
-            android:textSize="16sp"
-            />
+
 
         <ProgressBar
             android:layout_width="24dp"

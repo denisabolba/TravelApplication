@@ -6,9 +6,14 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -16,58 +21,87 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.squareup.picasso.Picasso;
+
+import de.hdodenhof.circleimageview.CircleImageView;
+
 
 public class ProfileActivity extends AppCompatActivity {
 
     EditText dataEditText;
     String datax;
+    TextView setName,setEmail,pname,pusername,pstatus,pcontact;
+    CircleImageView setPic;
+    Button editBtn;
+    FirebaseAuth auth;
+    FirebaseDatabase database;
+    FirebaseStorage storage;
+    Uri setImageUri;
+    String email,password;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile);
 
-        dataEditText = findViewById(R.id.data);
+        editBtn = findViewById(R.id.edit_profile_button);
+        setName = findViewById(R.id.profile_name);
+        setEmail = findViewById(R.id.profile_email);
+        setPic = findViewById(R.id.profile_image);
+        pname = findViewById(R.id.profilename);
+        pcontact = findViewById(R.id.profilecontact);
+        pstatus = findViewById(R.id.profilestatus);
+        pusername = findViewById(R.id.profileusername);
 
-        //receive data
-        datax = getIntent().getStringExtra("data");
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
-        CollectionReference usersRef = db.collection("data");
+        auth = FirebaseAuth.getInstance();
+        database = FirebaseDatabase.getInstance();
+        storage = FirebaseStorage.getInstance();
 
-        DocumentReference user1Ref = usersRef.document("my_data");
-
-        user1Ref.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+        DatabaseReference reference = database.getReference().child("user").child(auth.getCurrentUser().getUid());
+        StorageReference storageReference = storage.getReference().child("upload").child(auth.getCurrentUser().getUid());
+        reference.addValueEventListener(new ValueEventListener() {
             @Override
-            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                if (task.isSuccessful()) {
-                    DocumentSnapshot document = task.getResult();
-                    if (document.exists()) {
-                        // Get the "name" field from the document
-                        String name = document.getString("name");
-                        Log.d(TAG, "Name: " + name);
-                    } else {
-                        Log.d(TAG, "No such document");
-                    }
-                } else {
-                    Log.d(TAG, "get failed with ", task.getException());
-                }
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                email = snapshot.child("mail").getValue().toString();
+                password = snapshot.child("password").getValue().toString();
+                String name = snapshot.child("userName").getValue().toString();
+                String profile = snapshot.child("profilePic").getValue().toString();
+                String status = snapshot.child("status").getValue().toString();
+                String contact = snapshot.child("contact").getValue().toString();
+                setName.setText(name);
+                setEmail.setText(email);
+                pname.setText(name);
+                pcontact.setText(contact);
+                pusername.setText(name);
+                pstatus.setText(status);
+
+
+
+                Picasso.get().load(profile).into(setPic);
+            }
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
             }
         });
 
-
-
-
-
-
-
-
-
-
-
+        editBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(ProfileActivity.this,Setting.class));
+            }
+        });
 
     }
 
