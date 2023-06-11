@@ -73,14 +73,15 @@
 
             <EditText
                 android:id="@+id/notes_date_text"
-                android:layout_width="275dp"
+                android:layout_width="115dp"
                 android:layout_height="wrap_content"
                 android:layout_marginVertical="8dp"
-                android:hint="Date"
+                android:hint="Start Date"
                 android:padding="12dp"
                 android:textColor="@color/black"
                 android:textSize="16sp"
-                android:textStyle="bold" />
+                android:textStyle="bold"
+                android:background="@drawable/rounded_corner"/>
 
             <ImageButton
             android:id="@+id/date_note_btn"
@@ -89,6 +90,26 @@
             android:layout_gravity="center"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:src="@drawable/ic_date" />
+
+            <EditText
+                android:id="@+id/notes_end_date_text"
+                android:layout_width="115dp"
+                android:layout_height="wrap_content"
+                android:layout_marginVertical="8dp"
+                android:hint="End Date"
+                android:padding="12dp"
+                android:textColor="@color/black"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:background="@drawable/rounded_corner"/>
+
+            <ImageButton
+                android:id="@+id/end_date_note_btn"
+                android:layout_width="40dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:src="@drawable/ic_date" />
         </LinearLayout>
 
         <LinearLayout
@@ -151,7 +172,15 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Share Trip"
+            android:visibility="gone"
             android:id="@+id/btnNotification"
+            />
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Share Public"
+            android:id="@+id/sharePublic"
+            android:visibility="gone"
             />
 
 

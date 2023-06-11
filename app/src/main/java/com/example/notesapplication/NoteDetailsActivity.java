@@ -80,12 +80,12 @@ public class NoteDetailsActivity extends AppCompatActivity {
     private static final String TAG = "GoogleMaps";
     private static final int ERROR_DIALOG_REQUEST = 9001;
     private static final int SECOND_ACTIVITY_REQUEST_CODE = 1;
-    EditText titleEditText, contentEditText, dateEditText, timeEditText, locationEditText;
-    ImageButton saveNoteButton, dateNoteButton, timeNoteButton;
-    Button btnNotification;
+    EditText titleEditText, contentEditText, dateEditText, timeEditText, locationEditText,endDateEditText;
+    ImageButton saveNoteButton, dateNoteButton, timeNoteButton, endDateNoteButton;
+    Button btnNotification, btnSharePublic;
     TextView pageTitleTextView, deleteNoteTextViewBtn;
-    String date, time, title, content, docId, location,destination;
-    boolean isEditMode = false;
+    String date, endDate, time, title, content, docId,nou, location,destination;
+    boolean isEditMode = false, isNewMode = false;
     Calendar calendar = Calendar.getInstance();
     int currentHour = calendar.get(Calendar.HOUR);
     int currentMinute = calendar.get(Calendar.MINUTE);
@@ -119,11 +119,14 @@ public class NoteDetailsActivity extends AppCompatActivity {
         deleteNoteTextViewBtn = findViewById(R.id.delete_note_text_view_btn);
         dateEditText = findViewById(R.id.notes_date_text);
         dateNoteButton = findViewById(R.id.date_note_btn);
+        endDateEditText = findViewById(R.id.notes_end_date_text);
+        endDateNoteButton = findViewById(R.id.end_date_note_btn);
         timeEditText = findViewById(R.id.notes_time_text);
         timeNoteButton = findViewById(R.id.time_note_btn);
         btnNotification = findViewById(R.id.btnNotification);
         btnNotification = findViewById(R.id.btnNotification);
         locationEditText = findViewById(R.id.location_text);
+        btnSharePublic = findViewById(R.id.sharePublic);
 
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
@@ -134,6 +137,40 @@ public class NoteDetailsActivity extends AppCompatActivity {
 
         if (docId != null && !docId.isEmpty()) {
             isEditMode = true;
+            nou = getIntent().getStringExtra("nou");
+            if(nou!=null && !nou.isEmpty()){
+                isEditMode = false;
+                isNewMode = true;
+            }
+        }
+
+        if(isNewMode){
+            DatabaseReference reference = database.getReference().child("notes").child(userId).child("my_notes");
+            reference.addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+
+                    title = getIntent().getStringExtra("title");
+                    content = getIntent().getStringExtra("content");
+                    date = getIntent().getStringExtra("date");
+                    endDate = getIntent().getStringExtra("endDate");
+                    time = getIntent().getStringExtra("time");
+                    location = getIntent().getStringExtra("location");
+
+                    titleEditText.setText(title);
+                    contentEditText.setText(content);
+                    dateEditText.setText(date);
+                    endDateEditText.setText(endDate);
+                    timeEditText.setText(time);
+                    locationEditText.setText(location);
+
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
+
+                }
+            });
         }
 
         if (isEditMode) {
@@ -148,12 +185,14 @@ public class NoteDetailsActivity extends AppCompatActivity {
                     title = getIntent().getStringExtra("title");
                     content = getIntent().getStringExtra("content");
                     date = getIntent().getStringExtra("date");
+                    endDate = getIntent().getStringExtra("endDate");
                     time = getIntent().getStringExtra("time");
                     location = getIntent().getStringExtra("location");
 
                     titleEditText.setText(title);
                     contentEditText.setText(content);
                     dateEditText.setText(date);
+                    endDateEditText.setText(endDate);
                     timeEditText.setText(time);
                     locationEditText.setText(location);
 
@@ -176,10 +215,11 @@ public class NoteDetailsActivity extends AppCompatActivity {
                 String noteContent = contentEditText.getText().toString();
                 String noteTime = timeEditText.getText().toString();
                 String noteDate = dateEditText.getText().toString();
+                String noteEndDate = endDateEditText.getText().toString();
                 String formattedDate = String.format("%02d/%02d/%04d %02d:%02d", currentMonth, currentDay, currentYear, currentHour, currentMinute);
                 String noteLocation = locationEditText.getText().toString();
 
-                Note note = new Note(noteTitle, noteContent, noteDate, noteTime, formattedDate, noteLocation);
+                Note note = new Note(noteTitle, noteContent, noteDate, noteEndDate, noteTime, formattedDate, noteLocation);
                 DatabaseReference reference;
 
                 sendEmail(noteTitle,noteContent,isEditMode);
@@ -227,6 +267,8 @@ public class NoteDetailsActivity extends AppCompatActivity {
         if (isEditMode) {
             pageTitleTextView.setText("Edit your trip");
             deleteNoteTextViewBtn.setVisibility(View.VISIBLE);
+            btnSharePublic.setVisibility(View.VISIBLE);
+            btnNotification.setVisibility(View.VISIBLE);
         }
 
 
@@ -234,7 +276,18 @@ public class NoteDetailsActivity extends AppCompatActivity {
         deleteNoteTextViewBtn.setOnClickListener((v) -> deleteNoteFromFirebase());
 
 
-        dateNoteButton.setOnClickListener((v) -> chooseDate());
+        dateNoteButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                chooseDate();
+            }
+        });
+        endDateNoteButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                chooseEndDate();
+            }
+        });
         timeNoteButton.setOnClickListener((v) -> chooseTime());
 
 
@@ -299,6 +352,7 @@ public class NoteDetailsActivity extends AppCompatActivity {
                                         String sharedTitle = dataSnapshot.child("title").getValue(String.class);
                                         String sharedContent = dataSnapshot.child("content").getValue(String.class);
                                         String sharedDate = dataSnapshot.child("date").getValue(String.class);
+                                        String sharedEndDate = dataSnapshot.child("endDate").getValue(String.class);
                                         String sharedTime = dataSnapshot.child("time").getValue(String.class);
                                         String sharedLocation = dataSnapshot.child("location").getValue(String.class);
                                         String formattedDate = String.format("%02d/%02d/%04d %02d:%02d", currentMonth, currentDay, currentYear, currentHour, currentMinute);
@@ -306,6 +360,7 @@ public class NoteDetailsActivity extends AppCompatActivity {
                                         sharedNote.child(noteId).child("title").setValue(sharedTitle);
                                         sharedNote.child(noteId).child("content").setValue(sharedContent);
                                         sharedNote.child(noteId).child("date").setValue(sharedDate);
+                                        sharedNote.child(noteId).child("endDate").setValue(sharedEndDate);
                                         sharedNote.child(noteId).child("time").setValue(sharedTime);
                                         sharedNote.child(noteId).child("location").setValue(sharedLocation);
                                         sharedNote.child(noteId).child("currentDate").setValue(formattedDate);
@@ -338,6 +393,48 @@ public class NoteDetailsActivity extends AppCompatActivity {
 
             }
 
+        });
+
+        btnSharePublic.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                FirebaseDatabase database = FirebaseDatabase.getInstance();
+                String noteId = getIntent().getStringExtra("noteIdToUpdate");
+                FirebaseAuth auth = FirebaseAuth.getInstance();
+                String sharerId = auth.getUid();
+
+                DatabaseReference sharedNotePublic = database.getReference("publicNotes");
+
+                DatabaseReference reference = database.getReference().child("notes").child(sharerId).child("my_notes").child(noteId);
+
+                reference.addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        // Retrieve the note data
+                        String sharedTitle = dataSnapshot.child("title").getValue(String.class);
+                        String sharedContent = dataSnapshot.child("content").getValue(String.class);
+                        String sharedDate = dataSnapshot.child("date").getValue(String.class);
+                        String sharedTime = dataSnapshot.child("time").getValue(String.class);
+                        String sharedEndDate = dataSnapshot.child("endDate").getValue(String.class);
+                        String sharedLocation = dataSnapshot.child("location").getValue(String.class);
+                        String formattedDate = String.format("%02d/%02d/%04d %02d:%02d", currentMonth, currentDay, currentYear, currentHour, currentMinute);
+
+                        sharedNotePublic.child(noteId).child("title").setValue(sharedTitle);
+                        sharedNotePublic.child(noteId).child("content").setValue(sharedContent);
+                        sharedNotePublic.child(noteId).child("date").setValue(sharedDate);
+                        sharedNotePublic.child(noteId).child("endDate").setValue(sharedEndDate);
+                        sharedNotePublic.child(noteId).child("time").setValue(sharedTime);
+                        sharedNotePublic.child(noteId).child("location").setValue(sharedLocation);
+                        sharedNotePublic.child(noteId).child("currentDate").setValue(formattedDate);
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError error) {
+                        // Handle onCancelled
+                    }
+                });
+
+            }
         });
     }
 
@@ -469,6 +566,20 @@ public class NoteDetailsActivity extends AppCompatActivity {
                 myCalendar.set(Calendar.MONTH, month);
                 myCalendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
                 dateEditText.setText(String.valueOf(year) + "/" + String.valueOf(month) + "/" + String.valueOf(dayOfMonth));
+
+            }
+        }, currentYear, currentMonth, currentDay);
+        dialog.show();
+    }
+    private void chooseEndDate() {
+        DatePickerDialog dialog = new DatePickerDialog(this, R.style.DialogTheme, new DatePickerDialog.OnDateSetListener() {
+            @Override
+            public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
+
+                myCalendar.set(Calendar.YEAR, year);
+                myCalendar.set(Calendar.MONTH, month);
+                myCalendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
+                endDateEditText.setText(String.valueOf(year) + "/" + String.valueOf(month) + "/" + String.valueOf(dayOfMonth));
 
             }
         }, currentYear, currentMonth, currentDay);
@@ -637,53 +748,6 @@ public class NoteDetailsActivity extends AppCompatActivity {
         });
     }
 
-    void saveNote() {
-        String noteTitle = titleEditText.getText().toString();
-        String noteContent = contentEditText.getText().toString();
-        String noteTime = timeEditText.getText().toString();
-        String noteDate = dateEditText.getText().toString();
-        String noteLocation = locationEditText.getText().toString();
-
-        if(noteTitle == null || noteTitle.isEmpty()){
-            titleEditText.setError("Title is required");
-            return;
-        }
-
-        Note note = new Note();
-        note.setTitle(noteTitle);
-        note.setContent(noteContent);
-        note.setDate(noteDate);
-        note.setTime(noteTime);
-       // note.setLocation(noteLocation);
-        note.setTimestamp(Timestamp.now());
-
-
-        saveNoteToFirebase(note);
-    }
-
-    void saveNoteToFirebase(Note note){
-        DocumentReference documentReference;
-        if(isEditMode){
-            //update the note
-            documentReference = Utility.getCollectionReferenceForNotes().document(docId);
-        }else {
-            //create new note
-            documentReference = Utility.getCollectionReferenceForNotes().document();
-
-        }
-        documentReference.set(note).addOnCompleteListener(new OnCompleteListener<Void>() {
-            @Override
-            public void onComplete(@NonNull Task<Void> task) {
-                if(task.isSuccessful()){
-                    Utility.showToast(NoteDetailsActivity.this,"Note add successfully");
-                    finish();
-                }else{
-                    Utility.showToast(NoteDetailsActivity.this,"Failed while adding note");
-
-                }
-            }
-        });
-    }
     private void sendEmail(String title,String content,Boolean isEditMode){
         FirebaseAuth auth = FirebaseAuth.getInstance();
         FirebaseUser user = auth.getCurrentUser();

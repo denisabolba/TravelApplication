@@ -3,45 +3,39 @@ package com.example.notesapplication;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.text.Layout;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.EditText;
 import android.widget.TextView;
-
-import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
-import com.firebase.ui.firestore.FirestoreRecyclerOptions;
-import com.google.firebase.auth.FirebaseAuth;
-import com.squareup.picasso.Picasso;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.firebase.auth.FirebaseAuth;
+
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
-import de.hdodenhof.circleimageview.CircleImageView;
-import io.grpc.okhttp.internal.Util;
-
-public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.viewholder> {
-    Context mainActivity;
+public class NotePublicAdapter extends RecyclerView.Adapter<NotePublicAdapter.viewholder> {
+    Context HomeActivity;
     ArrayList<Note> noteArrayList;
     ArrayList<String> noteIdList;
-    public NoteAdapter(Activity mainActivity, ArrayList<Note> noteArrayList,ArrayList<String> noteIdList) {
-        this.mainActivity=mainActivity;
+    public NotePublicAdapter(Activity HomeActivity, ArrayList<Note> noteArrayList, ArrayList<String> noteIdList) {
+        this.HomeActivity=HomeActivity;
         this.noteArrayList=noteArrayList;
         this.noteIdList = noteIdList;
     }
 
     @NonNull
     @Override
-    public NoteAdapter.viewholder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(mainActivity).inflate(R.layout.recycler_note_item,parent,false);
-        return new NoteAdapter.viewholder(view);
+    public NotePublicAdapter.viewholder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        View view = LayoutInflater.from(HomeActivity).inflate(R.layout.custom_grid_layout,parent,false);
+        return new NotePublicAdapter.viewholder(view);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull NoteAdapter.viewholder holder, int position) {
+    public void onBindViewHolder(@NonNull NotePublicAdapter.viewholder holder, int position) {
 
         Note note = noteArrayList.get(position);
         String noteIdToUpdate = noteIdList.get(position);
@@ -49,6 +43,9 @@ public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.viewholder> {
         holder.title.setText(note.getTitle());
         holder.content.setText(note.getContent());
         holder.timestampText.setText(note.getCurrentDate());
+        holder.location.setText(note.getLocation());
+        holder.startDate.setText(note.getDate());
+        holder.endDate.setText(note.getEndDate());
 
 
         holder.itemView.setOnClickListener(new View.OnClickListener() {
@@ -56,18 +53,19 @@ public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.viewholder> {
             public void onClick(View view) {
                 FirebaseAuth auth = FirebaseAuth.getInstance();
                 String docId = auth.getCurrentUser().getUid();
+                String nou = "nou";
 
-                Intent intent = new Intent(mainActivity, NoteDetailsActivity.class);
+                Intent intent = new Intent(HomeActivity, NoteDetailsActivity.class);
                 intent.putExtra("title",note.getTitle());
                 intent.putExtra("content",note.getContent());
                 intent.putExtra("docId",docId);
+                intent.putExtra("nou",nou);
                 intent.putExtra("date",note.getDate());
                 intent.putExtra("time",note.getTime());
-                intent.putExtra("endDate",note.getEndDate());
                 intent.putExtra("location",note.getLocation());
                 intent.putExtra("noteIdToUpdate", noteIdToUpdate); // Pass the noteIdToUpdate as an extr
 
-                mainActivity.startActivity(intent);
+                HomeActivity.startActivity(intent);
 
             }
         });
@@ -80,12 +78,17 @@ public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.viewholder> {
     }
 
     public class viewholder extends RecyclerView.ViewHolder {
-        TextView title,content,timestampText;
+        TextView title,content,timestampText,startDate,endDate,location;
         public viewholder(@NonNull View itemView) {
             super(itemView);
             title = itemView.findViewById(R.id.note_title_text_view);
             content = itemView.findViewById(R.id.note_content_text_view);
             timestampText = itemView.findViewById(R.id.note_timestamp_text_view);
+            location = itemView.findViewById(R.id.note_location_text_view);
+            startDate = itemView.findViewById(R.id.note_startDate_text_view);
+            endDate = itemView.findViewById(R.id.note_endDate_text_view);
             }
     }
+
+
 }

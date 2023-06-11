@@ -69,7 +69,7 @@ public class MainActivity extends AppCompatActivity {
                 switch (id) {
                     case R.id.nav_home:
                         // Handle Home selection
-                        Intent intent = new Intent(MainActivity.this, MainActivity2.class);
+                        Intent intent = new Intent(MainActivity.this, HomeActivity.class);
                         startActivity(intent);
                         drawerLayout.closeDrawer(GravityCompat.START); // Close the drawer after handling the item selection
                         return true;

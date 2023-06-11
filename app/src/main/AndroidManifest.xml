@@ -19,7 +19,12 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.NotesApplication"
         tools:targetApi="31">
-
+        <activity
+            android:name=".ViewTemplate"
+            android:exported="false" />
+        <activity
+            android:name=".HomeActivity"
+            android:exported="false" />
 
         <receiver android:name=".NotificationReceiver" />
 

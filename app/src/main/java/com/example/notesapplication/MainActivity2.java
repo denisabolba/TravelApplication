@@ -112,8 +112,7 @@ public class MainActivity2 extends AppCompatActivity {
 
         database = FirebaseDatabase.getInstance();
         auth = FirebaseAuth.getInstance();
-        //cumbut = findViewById(R.id.camBut);
-        //setbut = findViewById(R.id.settingBut);
+
 
         DatabaseReference reference = database.getReference().child("user");
 
@@ -198,21 +197,6 @@ public class MainActivity2 extends AppCompatActivity {
             }
         });
 
-        /*setbut.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(MainActivity2.this, Setting.class);
-                startActivity(intent);
-            }
-        });
-
-        cumbut.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
-                startActivityForResult(intent,10);
-            }
-        });*/
 
         if (auth.getCurrentUser()==null){
             Intent intent = new Intent(MainActivity2.this,LoginActivity.class);

@@ -9,17 +9,32 @@ public class Note {
     String content;
     Timestamp timestamp;
     String date;
+    String endDate;
     String time;
     String currentDate;
     String location;
-    ArrayList<String> sharedWith;
 
-    public ArrayList<String> getSharedWith() {
-        return sharedWith;
+
+
+    public Note(String title, String content, String date, String endDate, String time, String currentDate, String location) {
+        this.title = title;
+        this.content = content;
+        this.date = date;
+        this.endDate = endDate;
+        this.time = time;
+        this.currentDate = currentDate;
+        this.location = location;
     }
 
-    public void setSharedWith(ArrayList<String> sharedWith) {
-        this.sharedWith = sharedWith;
+    public Note() {
+    }
+
+    public String getEndDate() {
+        return endDate;
+    }
+
+    public void setEndDate(String endDate) {
+        this.endDate = endDate;
     }
 
     public String getCurrentDate() {
@@ -36,19 +51,6 @@ public class Note {
 
     public void setLocation(String location) {
         this.location = location;
-    }
-
-
-    public Note(String title, String content, String date, String time, String currentDate, String location) {
-        this.title = title;
-        this.content = content;
-        this.date = date;
-        this.time = time;
-        this.currentDate = currentDate;
-        this.location = location;
-    }
-
-    public Note() {
     }
 
     public String getDate() {
