@@ -14,9 +14,9 @@ public class Note {
     String currentDate;
     String location;
 
+    String sharerId;
 
-
-    public Note(String title, String content, String date, String endDate, String time, String currentDate, String location) {
+    public Note(String title, String content, String date, String endDate, String time, String currentDate, String location, String sharerId) {
         this.title = title;
         this.content = content;
         this.date = date;
@@ -24,9 +24,18 @@ public class Note {
         this.time = time;
         this.currentDate = currentDate;
         this.location = location;
+        this.sharerId = sharerId;
     }
 
     public Note() {
+    }
+
+    public String getSharerId() {
+        return sharerId;
+    }
+
+    public void setSharerId(String sharerId) {
+        this.sharerId = sharerId;
     }
 
     public String getEndDate() {

@@ -12,6 +12,11 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -21,6 +26,7 @@ public class NotePublicAdapter extends RecyclerView.Adapter<NotePublicAdapter.vi
     Context HomeActivity;
     ArrayList<Note> noteArrayList;
     ArrayList<String> noteIdList;
+    String sharerId;
     public NotePublicAdapter(Activity HomeActivity, ArrayList<Note> noteArrayList, ArrayList<String> noteIdList) {
         this.HomeActivity=HomeActivity;
         this.noteArrayList=noteArrayList;
@@ -55,6 +61,30 @@ public class NotePublicAdapter extends RecyclerView.Adapter<NotePublicAdapter.vi
                 String docId = auth.getCurrentUser().getUid();
                 String nou = "nou";
 
+                FirebaseDatabase database = FirebaseDatabase.getInstance();
+                DatabaseReference databaseReference = database.getReference("publicNotes").child(noteIdToUpdate).child("sharerId");
+
+                databaseReference.addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        // Verificați dacă există date valide
+                        if (dataSnapshot.exists()) {
+                             sharerId = dataSnapshot.getValue(String.class);
+                            // Utilizați valoarea sharerId în codul dvs.
+                            // ...
+
+
+                        } else {
+                            // Documentul nu există sau câmpul sharerId este gol
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+                        // Tratați eroarea în cazul în care citirea datelor a eșuat
+                    }
+                });
+
                 Intent intent = new Intent(HomeActivity, NoteDetailsActivity.class);
                 intent.putExtra("title",note.getTitle());
                 intent.putExtra("content",note.getContent());
@@ -63,6 +93,7 @@ public class NotePublicAdapter extends RecyclerView.Adapter<NotePublicAdapter.vi
                 intent.putExtra("date",note.getDate());
                 intent.putExtra("time",note.getTime());
                 intent.putExtra("location",note.getLocation());
+                intent.putExtra("sharerId",note.getSharerId());
                 intent.putExtra("noteIdToUpdate", noteIdToUpdate); // Pass the noteIdToUpdate as an extr
 
                 HomeActivity.startActivity(intent);

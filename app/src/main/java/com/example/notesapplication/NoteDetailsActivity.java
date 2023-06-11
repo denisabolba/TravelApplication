@@ -82,9 +82,9 @@ public class NoteDetailsActivity extends AppCompatActivity {
     private static final int SECOND_ACTIVITY_REQUEST_CODE = 1;
     EditText titleEditText, contentEditText, dateEditText, timeEditText, locationEditText,endDateEditText;
     ImageButton saveNoteButton, dateNoteButton, timeNoteButton, endDateNoteButton;
-    Button btnNotification, btnSharePublic;
+    Button btnNotification, btnSharePublic,btnContactUser;
     TextView pageTitleTextView, deleteNoteTextViewBtn;
-    String date, endDate, time, title, content, docId,nou, location,destination;
+    String date, endDate, time, title, content, docId,nou, location,destination, sharerId;
     boolean isEditMode = false, isNewMode = false;
     Calendar calendar = Calendar.getInstance();
     int currentHour = calendar.get(Calendar.HOUR);
@@ -127,6 +127,7 @@ public class NoteDetailsActivity extends AppCompatActivity {
         btnNotification = findViewById(R.id.btnNotification);
         locationEditText = findViewById(R.id.location_text);
         btnSharePublic = findViewById(R.id.sharePublic);
+        btnContactUser = findViewById(R.id.btn_Contact_User);
 
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
@@ -144,7 +145,43 @@ public class NoteDetailsActivity extends AppCompatActivity {
             }
         }
 
+        btnContactUser.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                sharerId = getIntent().getStringExtra("sharerId");
+
+                DatabaseReference usersRef = database.getReference("user").child(sharerId);
+                usersRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        if (dataSnapshot.exists()) {
+                            String profilePic = dataSnapshot.child("profilePic").getValue(String.class);
+                            String userName = dataSnapshot.child("userName").getValue(String.class);
+
+                            // Utilizați valorile profilePic și userName în codul dvs.
+                            // ...
+                            Intent intent = new Intent(NoteDetailsActivity.this, chatWin.class);
+                            intent.putExtra("name",userName);
+                            intent.putExtra("receiverImg",profilePic);
+                            intent.putExtra("uid",sharerId);
+                            startActivity(intent);
+
+
+                        } else {
+                            // Documentul nu există
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+                        // Tratați eroarea în cazul în care citirea datelor a eșuat
+                    }
+                });
+            }
+        });
+
         if(isNewMode){
+            btnContactUser.setVisibility(View.VISIBLE);
             DatabaseReference reference = database.getReference().child("notes").child(userId).child("my_notes");
             reference.addValueEventListener(new ValueEventListener() {
                 @Override
@@ -218,8 +255,9 @@ public class NoteDetailsActivity extends AppCompatActivity {
                 String noteEndDate = endDateEditText.getText().toString();
                 String formattedDate = String.format("%02d/%02d/%04d %02d:%02d", currentMonth, currentDay, currentYear, currentHour, currentMinute);
                 String noteLocation = locationEditText.getText().toString();
+                String sharerId = "";
 
-                Note note = new Note(noteTitle, noteContent, noteDate, noteEndDate, noteTime, formattedDate, noteLocation);
+                Note note = new Note(noteTitle, noteContent, noteDate, noteEndDate, noteTime, formattedDate, noteLocation,sharerId);
                 DatabaseReference reference;
 
                 sendEmail(noteTitle,noteContent,isEditMode);
@@ -426,6 +464,7 @@ public class NoteDetailsActivity extends AppCompatActivity {
                         sharedNotePublic.child(noteId).child("time").setValue(sharedTime);
                         sharedNotePublic.child(noteId).child("location").setValue(sharedLocation);
                         sharedNotePublic.child(noteId).child("currentDate").setValue(formattedDate);
+                        sharedNotePublic.child(noteId).child("sharerId").setValue(sharerId);
                     }
 
                     @Override
