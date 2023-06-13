@@ -7,6 +7,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
@@ -74,35 +76,36 @@ public class HomeActivity extends AppCompatActivity {
         });
 
         searchBtn.setOnClickListener(new View.OnClickListener() {
+
             @Override
             public void onClick(View v) {
-                SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
-                String startDateText = startDateEditText.getText().toString();
-                String endDateText = endDateEditText.getText().toString();
-                Date startDate = null;
-                if (!startDateText.equals("")) {
-                    try {
-                        startDate = dateFormat.parse(startDateText);
-                    } catch (ParseException e) {
-                        throw new RuntimeException(e);
-                    }
-                }
-                Date endDate = null;
-                if (!endDateText.equals("")) {
-                    try {
-                        endDate = dateFormat.parse(endDateText);
-                    } catch (ParseException e) {
-                        throw new RuntimeException(e);
-                    }
-                }
+                filteredNoteList.clear();
+                SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd", Locale.getDefault());
 
                 String locationFilter = locationEditText.getText().toString().trim();
 
-                filteredNoteList.clear();
-
-
-
                 for (Note note : noteArrayList) {
+
+                    String startDateText = startDateEditText.getText().toString();
+                    Date startDate = null;
+                    if (!startDateText.equals("")) {
+                        try {
+                            startDate = dateFormat.parse(startDateText);
+                        } catch (ParseException e) {
+                            throw new RuntimeException(e);
+                        }
+                    }
+
+                    String endDateText = endDateEditText.getText().toString();
+                    Date endDate = null;
+                    if (!endDateText.equals("")) {
+                        try {
+                            endDate = dateFormat.parse(endDateText);
+                        } catch (ParseException e) {
+                            throw new RuntimeException(e);
+                        }
+                    }
+
                     String noteDateText = note.getDate();
                     Date noteDate = null;
                     try {
@@ -114,12 +117,12 @@ public class HomeActivity extends AppCompatActivity {
                     String noteEndDateText = note.getEndDate();
                     Date noteEndDate = null;
                     try {
-                        noteEndDate = dateFormat.parse(noteDateText);
+                        noteEndDate = dateFormat.parse(noteEndDateText);
                     } catch (ParseException e) {
                         throw new RuntimeException(e);
                     }
 
-                    if (startDate != null && endDate != null) {
+                    if (startDate != null || endDate != null) {
 
                         if (endDate != null && startDate == null) {
                             if (noteDate.before(endDate)) {

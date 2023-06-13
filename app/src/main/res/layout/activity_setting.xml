@@ -127,7 +127,7 @@
         app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.886" />
+        app:layout_constraintVertical_bias="0.919" />
 
     <Button
         android:id="@+id/delete_btn"
@@ -135,14 +135,15 @@
         android:layout_height="35dp"
         android:backgroundTint="@color/black"
         android:text="Delete account"
-        android:visibility="gone"
+        android:visibility="visible"
         app:cornerRadius="25dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.849" />
+        app:layout_constraintVertical_bias="0.869"
+        />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

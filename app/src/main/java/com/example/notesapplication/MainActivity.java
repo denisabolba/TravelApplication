@@ -22,11 +22,14 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.Toolbar;
 
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -55,6 +58,58 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+        String userId = currentUser.getUid();
+
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        DatabaseReference databaseReference = database.getReference().child("accountsDeleted").child(userId);
+
+        databaseReference.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                String deleted = snapshot.getValue(String.class);
+                if(deleted!=null && !deleted.isEmpty()){
+                    FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+                    String userId = currentUser.getUid();
+                    DatabaseReference userRef2 = FirebaseDatabase.getInstance().getReference()
+                            .child("user")
+                            .child(userId);
+                    userRef2.removeValue().addOnCompleteListener(new OnCompleteListener<Void>() {
+                        @Override
+                        public void onComplete(@NonNull Task<Void> task) {
+                            // Proceed to delete the user from Firebase Authentication
+                            FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+                            if (user != null) {
+                                user.delete().addOnCompleteListener(new OnCompleteListener<Void>() {
+                                    @Override
+                                    public void onComplete(@NonNull Task<Void> task) {
+                                        if (task.isSuccessful()) {
+                                            // User deleted successfully
+                                            Toast.makeText(MainActivity.this, "User deleted", Toast.LENGTH_SHORT).show();
+                                            FirebaseAuth auth = FirebaseAuth.getInstance();
+                                            auth.signOut();
+                                            startActivity(new Intent(MainActivity.this,LoginActivity.class));
+                                            finish();
+                                        } else {
+                                            // Error occurred while deleting the user
+                                            Toast.makeText(MainActivity.this, "Failed to delete user", Toast.LENGTH_SHORT).show();
+                                        }
+                                    }
+                                });
+                            }
+                        }
+                    });
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+
+
+
 
         drawerLayout = findViewById(R.id.drawer_layout);
         drawerToggle = new ActionBarDrawerToggle(this, drawerLayout, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
@@ -124,10 +179,10 @@ public class MainActivity extends AppCompatActivity {
         recyclerView = findViewById(R.id.recyler_view);
         menuBtn = findViewById(R.id.menu_btn);
 
-        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        FirebaseDatabase firbaseDatabase = FirebaseDatabase.getInstance();
         FirebaseAuth auth = FirebaseAuth.getInstance();
 
-        DatabaseReference reference = database.getReference().child("notes").child(auth.getCurrentUser().getUid()).child("my_notes");
+        DatabaseReference reference = firbaseDatabase.getReference().child("notes").child(auth.getCurrentUser().getUid()).child("my_notes");
 
         noteArrayList = new ArrayList<>();
         noteIdList = new  ArrayList<>();

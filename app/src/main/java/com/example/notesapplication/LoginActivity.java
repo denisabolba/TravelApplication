@@ -9,8 +9,11 @@ import android.os.Bundle;
 import android.util.Patterns;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ProgressBar;
+import android.widget.Switch;
+import android.widget.TextSwitcher;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -25,6 +28,10 @@ public class LoginActivity extends AppCompatActivity {
     Button loginBtn;
     ProgressBar progressBar;
     TextView createAccountBtnTextView;
+    Switch switchButton;
+    boolean admin = false;
+    
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,6 +43,18 @@ public class LoginActivity extends AppCompatActivity {
         loginBtn = findViewById(R.id.login_btn);
         progressBar = findViewById(R.id.progress_bar);
         createAccountBtnTextView = findViewById(R.id.create_account_text_view_btn);
+        switchButton = findViewById(R.id.switchButton);
+        
+        switchButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked) {
+                    admin = true;
+                } else {
+                    admin = false;
+                }
+            }
+        });
 
         loginBtn.setOnClickListener((v)-> loginUser() );
         createAccountBtnTextView.setOnClickListener((v)->startActivity(new Intent(LoginActivity.this,CreateAccountActivity.class)) );

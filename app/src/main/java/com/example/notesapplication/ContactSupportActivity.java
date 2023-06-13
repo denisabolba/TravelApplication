@@ -23,9 +23,6 @@ public class ContactSupportActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_contact_support);
 
-
-
-
         email = findViewById(R.id.email);
         subject = findViewById(R.id.subject);
         message = findViewById(R.id.message);

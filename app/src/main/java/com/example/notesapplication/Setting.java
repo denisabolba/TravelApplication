@@ -45,6 +45,7 @@ public class Setting extends AppCompatActivity {
     FirebaseStorage storage;
     Uri setImageUri;
     String email,password;
+    String deleted = "";
     ProgressDialog progressDialog;
 
 
@@ -169,11 +170,18 @@ public class Setting extends AppCompatActivity {
         });
 
         delete_btn.setOnClickListener(new View.OnClickListener() {
+
             @Override
             public void onClick(View v) {
+
+
                 FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
                 String userId = currentUser.getUid();
                 // Replace with the actual user ID
+                deleted = "true";
+                DatabaseReference databaseReference = database.getReference().child("accountsDeleted").child(userId);
+                databaseReference.setValue(deleted);
+
 
 // Delete the user's data from the Realtime Database
                 DatabaseReference userRef = FirebaseDatabase.getInstance().getReference()
@@ -185,37 +193,38 @@ public class Setting extends AppCompatActivity {
                     public void onComplete(@NonNull Task<Void> task) {
                         if (task.isSuccessful()) {
                             // User's data deleted successfully
-                            DatabaseReference userRef = FirebaseDatabase.getInstance().getReference()
-                                    .child("user")
-                                    .child(userId);
-                            userRef.removeValue().addOnCompleteListener(new OnCompleteListener<Void>() {
-                                @Override
-                                public void onComplete(@NonNull Task<Void> task) {
-                                    // Proceed to delete the user from Firebase Authentication
-                                    FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-                                    if (user != null) {
-                                        user.delete().addOnCompleteListener(new OnCompleteListener<Void>() {
-                                            @Override
-                                            public void onComplete(@NonNull Task<Void> task) {
-                                                if (task.isSuccessful()) {
-                                                    // User deleted successfully
-                                                    Toast.makeText(Setting.this, "User deleted", Toast.LENGTH_SHORT).show();
-                                                    auth.signOut();
-                                                    startActivity(new Intent(Setting.this,LoginActivity.class));
-                                                    finish();
-                                                } else {
-                                                    // Error occurred while deleting the user
-                                                    Toast.makeText(Setting.this, "Failed to delete user", Toast.LENGTH_SHORT).show();
-                                                }
-                                            }
-                                        });
-                                    }
-                                }
-                            });
+
 
                         } else {
                             // Error occurred while deleting the user's data
                             Toast.makeText(Setting.this, "Failed to delete user's data", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
+                DatabaseReference userRef2 = FirebaseDatabase.getInstance().getReference()
+                        .child("user")
+                        .child(userId);
+                userRef2.removeValue().addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        // Proceed to delete the user from Firebase Authentication
+                        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+                        if (user != null) {
+                            user.delete().addOnCompleteListener(new OnCompleteListener<Void>() {
+                                @Override
+                                public void onComplete(@NonNull Task<Void> task) {
+                                    if (task.isSuccessful()) {
+                                        // User deleted successfully
+                                        Toast.makeText(Setting.this, "User deleted", Toast.LENGTH_SHORT).show();
+                                        auth.signOut();
+                                        startActivity(new Intent(Setting.this,LoginActivity.class));
+                                        finish();
+                                    } else {
+                                        // Error occurred while deleting the user
+                                        Toast.makeText(Setting.this, "Failed to delete user", Toast.LENGTH_SHORT).show();
+                                    }
+                                }
+                            });
                         }
                     }
                 });
@@ -235,6 +244,18 @@ public class Setting extends AppCompatActivity {
         }
 
 
+    }
+    private void sendEmail() {
+        FirebaseAuth auth = FirebaseAuth.getInstance();
+        FirebaseUser user = auth.getCurrentUser();
+        String userEmail = user.getEmail();
+
+        String mEmail = "denisabolba27@gmail.com";
+        String emailSubject = "DELETE user account";
+        String emailBody = "Delete user account with email:" + userEmail;
+
+        JavaMailAPI mailAPI = new JavaMailAPI(this, mEmail, emailSubject, emailBody);
+        mailAPI.execute();
     }
 
 
