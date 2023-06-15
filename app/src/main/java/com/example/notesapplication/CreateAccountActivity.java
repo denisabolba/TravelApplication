@@ -87,36 +87,6 @@ public class CreateAccountActivity extends AppCompatActivity {
         }
     }
 
-    void saveData(){
-        String dataContact = contactEditText.getText().toString();
-
-        Data data = new Data();
-        data.setData(dataContact);
-
-        saveDataToFirebase(data);
-        finish();
-
-    }
-    void saveDataToFirebase(Data data){
-        DocumentReference documentReference;
-
-            //create new note
-            documentReference = Utility.getCollectionReferenceForData().document();
-
-        documentReference.set(data).addOnCompleteListener(new OnCompleteListener<Void>() {
-            @Override
-            public void onComplete(@NonNull Task<Void> task) {
-                if(task.isSuccessful()){
-                    Utility.showToast(CreateAccountActivity.this,"Data add successfully");
-                    finish();
-                }else{
-                    Utility.showToast(CreateAccountActivity.this,"Failed while adding data");
-
-                }
-            }
-        });
-    }
-
      void createAccount() {
 
         String name = usernameEditText.getText().toString();

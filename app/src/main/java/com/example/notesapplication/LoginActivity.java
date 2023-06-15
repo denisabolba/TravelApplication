@@ -1,6 +1,5 @@
 package com.example.notesapplication;
 
-
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -21,16 +20,22 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 public class LoginActivity extends AppCompatActivity {
 
-    EditText emailEditText,passwordEditText;
+    EditText emailEditText, passwordEditText;
     Button loginBtn;
     ProgressBar progressBar;
     TextView createAccountBtnTextView;
     Switch switchButton;
+    String admins = "false";
     boolean admin = false;
-    
 
 
     @Override
@@ -44,7 +49,7 @@ public class LoginActivity extends AppCompatActivity {
         progressBar = findViewById(R.id.progress_bar);
         createAccountBtnTextView = findViewById(R.id.create_account_text_view_btn);
         switchButton = findViewById(R.id.switchButton);
-        
+
         switchButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -56,34 +61,34 @@ public class LoginActivity extends AppCompatActivity {
             }
         });
 
-        loginBtn.setOnClickListener((v)-> loginUser() );
-        createAccountBtnTextView.setOnClickListener((v)->startActivity(new Intent(LoginActivity.this,CreateAccountActivity.class)) );
+        loginBtn.setOnClickListener((v) -> loginUser());
+        createAccountBtnTextView.setOnClickListener((v) -> startActivity(new Intent(LoginActivity.this, CreateAccountActivity.class)));
 
     }
 
-    void loginUser(){
-        String email  = emailEditText.getText().toString();
-        String password  = passwordEditText.getText().toString();
+    void loginUser() {
+        String email = emailEditText.getText().toString();
+        String password = passwordEditText.getText().toString();
 
 
-        boolean isValidated = validateData(email,password);
-        if(!isValidated){
+        boolean isValidated = validateData(email, password);
+        if (!isValidated) {
             return;
         }
 
-        loginAccountInFirebase(email,password);
+        loginAccountInFirebase(email, password);
 
     }
 
-    void loginAccountInFirebase(String email,String password){
+    void loginAccountInFirebase(String email, String password) {
         FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
 
         changeInProgress(true);
-        firebaseAuth.signInWithEmailAndPassword(email,password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+        firebaseAuth.signInWithEmailAndPassword(email, password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
             @Override
             public void onComplete(@NonNull Task<AuthResult> task) {
                 changeInProgress(false);
-                if(task.isSuccessful()){
+                if (task.isSuccessful()) {
                     //login is success
                     /*if(firebaseAuth.getCurrentUser().isEmailVerified()){
                         //go to mainactivity
@@ -92,37 +97,77 @@ public class LoginActivity extends AppCompatActivity {
                     }else{
                         Utility.showToast(LoginActivity.this,"Email not verified, Please verify your email.");
                     }*/
-                    String userId = firebaseAuth.getUid();
-                    Toast.makeText(LoginActivity.this, userId, Toast.LENGTH_SHORT).show();
-                    startActivity(new Intent(LoginActivity.this,MainActivity.class));
-                    finish();
 
-                }else{
+                    FirebaseDatabase database = FirebaseDatabase.getInstance();
+                    String userId = firebaseAuth.getUid();
+                    DatabaseReference databaseReference = database.getReference().child("admins").child(userId).child("admin");
+                    databaseReference.addValueEventListener(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                            // Verificați dacă există date valide
+                            if (dataSnapshot.exists()) {
+                                admins = dataSnapshot.getValue(String.class);
+                                // Utilizați valoarea sharerId în codul dvs.
+                                // ...
+
+
+                            } else {
+                                // Documentul nu există sau câmpul sharerId este gol
+                            }
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError databaseError) {
+                            // Tratați eroarea în cazul în care citirea datelor a eșuat
+                        }
+                    });
+
+
+                    if (admin) {
+
+                        if (admins.equals("true")) {
+
+                            Toast.makeText(LoginActivity.this, userId, Toast.LENGTH_SHORT).show();
+                            startActivity(new Intent(LoginActivity.this, AdminActivityUsers.class));
+                            finish();
+                        } else {
+                            Toast.makeText(LoginActivity.this, "User is not admin", Toast.LENGTH_SHORT).show();
+                            firebaseAuth.signOut();
+                        }
+
+                    } else {
+
+                        Toast.makeText(LoginActivity.this, userId, Toast.LENGTH_SHORT).show();
+                        startActivity(new Intent(LoginActivity.this, MainActivity.class));
+                        finish();
+                    }
+
+                } else {
                     //login failed
-                    Utility.showToast(LoginActivity.this,task.getException().getLocalizedMessage());
+                    Utility.showToast(LoginActivity.this, task.getException().getLocalizedMessage());
                 }
             }
         });
     }
 
-    void changeInProgress(boolean inProgress){
-        if(inProgress){
+    void changeInProgress(boolean inProgress) {
+        if (inProgress) {
             progressBar.setVisibility(View.VISIBLE);
             loginBtn.setVisibility(View.GONE);
-        }else{
+        } else {
             progressBar.setVisibility(View.GONE);
             loginBtn.setVisibility(View.VISIBLE);
         }
     }
 
-    boolean validateData(String email,String password){
+    boolean validateData(String email, String password) {
         //validate the data that are input by user.
 
-        if(!Patterns.EMAIL_ADDRESS.matcher(email).matches()){
+        if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
             emailEditText.setError("Email is invalid");
             return false;
         }
-        if(password.length()<6){
+        if (password.length() < 6) {
             passwordEditText.setError("Password length is invalid");
             return false;
         }
