@@ -232,80 +232,9 @@ public class MainActivity extends AppCompatActivity {
         });
 
 
-     /* reference.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                noteArrayList.clear();
-                noteIdList.clear();
-                for(DataSnapshot dataSnapshot: snapshot.getChildren()){
-                    String noteIdToUpdate = dataSnapshot.getKey();
-                    noteIdList.add(noteIdToUpdate);
-
-                    Note note = dataSnapshot.getValue(Note.class);
-                    noteArrayList.add(note);
-
-                }
-                noteAdapter.notifyDataSetChanged();
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-
-            }
-        });
-
-
-        DatabaseReference sharedNotesRef = database.getReference().child("notes")
-                .child(auth.getCurrentUser().getUid())
-                .child("shared_notes");
-
-        sharedNotesRef.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
-                    String noteIdToUpdatex = dataSnapshot.getKey();
-                    String[] substrings = noteIdToUpdatex.split(" ");
-
-// Access the individual substrings
-                    String substringNoteId = substrings[0]; // "abc"
-                    String substringUserId = substrings[1];
-                    DatabaseReference noteRef = database.getReference().child("notes").child(substringUserId).child("my_notes");
-                    noteRef.addValueEventListener(new ValueEventListener() {
-                        @Override
-                        public void onDataChange(@NonNull DataSnapshot snapshot) {
-                            for(DataSnapshot dataSnapshot: snapshot.getChildren()){
-                                String noteIdToUpdate2 = dataSnapshot.getKey();
-                                if(noteIdToUpdate2.equals(substringNoteId)) {
-                                    noteIdList.add(noteIdToUpdate2);
-
-                                    Note note = dataSnapshot.getValue(Note.class);
-                                    noteArrayList.add(note);
-                                }
-                            }
-                            noteAdapter.notifyDataSetChanged();
-                        }
-
-                        @Override
-                        public void onCancelled(@NonNull DatabaseError error) {
-
-                        }
-                    });
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-                // Handle the error
-            }
-        });*/
-
-
-
-
         addNoteBtn.setOnClickListener((v)-> startActivity(new Intent(MainActivity.this,NoteDetailsActivity.class)) );
         menuBtn.setOnClickListener((v)->showMenu() );
     }
-
     void showMenu(){
         PopupMenu popupMenu  = new PopupMenu(MainActivity.this,menuBtn);
         popupMenu.getMenu().add("Logout");
