@@ -128,7 +128,7 @@ public class LoginActivity extends AppCompatActivity {
                     } else {
 
                         Toast.makeText(LoginActivity.this, userId, Toast.LENGTH_SHORT).show();
-                        startActivity(new Intent(LoginActivity.this, AdminHome.class));
+                        startActivity(new Intent(LoginActivity.this, HomeMenuActivity.class));
                         finish();
                     }
 
