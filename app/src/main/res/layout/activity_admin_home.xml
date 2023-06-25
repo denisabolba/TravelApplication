@@ -25,15 +25,22 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_alignParentTop="true"
-                android:layout_alignParentEnd="true"
-                android:layout_alignParentRight="true"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="10dp"
+                android:gravity="center"
+                android:text="Travel Partners"
+                android:textSize="40sp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
                 android:layout_marginTop="60dp"
                 android:layout_marginEnd="60dp"
                 android:layout_marginBottom="20dp"
                 android:gravity="center"
                 android:text="Admin Center"
-                android:textSize="40sp" />
+                android:textSize="20sp" />
         </RelativeLayout>
 
         <GridLayout
@@ -73,7 +80,8 @@
                         android:layout_height="80dp"
                         android:layout_gravity="center_horizontal"
                         android:layout_marginBottom="12dp"
-                        android:src="@drawable/login" />
+                        android:src="@drawable/plane"
+                        android:tint="@color/white"/>
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -111,7 +119,8 @@
                         android:layout_height="80dp"
                         android:layout_gravity="center_horizontal"
                         android:layout_marginBottom="12dp"
-                        android:src="@drawable/login" />
+                        android:src="@drawable/profile"
+                        android:tint="@color/white"/>
 
                     <TextView
                         android:layout_width="wrap_content"
