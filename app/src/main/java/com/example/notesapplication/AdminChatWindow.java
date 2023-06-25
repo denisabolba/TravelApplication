@@ -60,6 +60,7 @@ public class AdminChatWindow extends AppCompatActivity {
         leftIcon = findViewById(R.id.left_icon);
         rightIcon = findViewById(R.id.right_icon);
         toolbarTitle = findViewById(R.id.toolbar_title);
+        rightIcon.setVisibility(View.GONE);
 
         leftIcon.setOnClickListener(new View.OnClickListener() {
             @Override

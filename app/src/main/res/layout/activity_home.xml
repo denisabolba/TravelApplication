@@ -76,7 +76,7 @@
                 android:layout_width="300dp"
                 android:layout_height="wrap_content"
                 android:id="@+id/search_button"
-                android:text="Search Template" />
+                android:text="Search Trip" />
 
             <ImageButton
                 android:layout_width="50dp"

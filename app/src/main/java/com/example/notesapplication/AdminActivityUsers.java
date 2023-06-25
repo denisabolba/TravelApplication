@@ -16,6 +16,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.SearchView;
+import android.widget.TextView;
 
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
@@ -40,11 +41,25 @@ public class AdminActivityUsers extends AppCompatActivity {
     private ActionBarDrawerToggle drawerToggle;
     private NavigationView navigationView;
     ArrayList<Users> filteredList;
+    ImageView rightIcon, leftIcon;
+    TextView toolbarTitle;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_admin_users);
+
+        leftIcon = findViewById(R.id.left_icon);
+        rightIcon = findViewById(R.id.right_icon);
+        toolbarTitle = findViewById(R.id.toolbar_title);
+        rightIcon.setVisibility(View.GONE);
+
+        leftIcon.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
 
 
 

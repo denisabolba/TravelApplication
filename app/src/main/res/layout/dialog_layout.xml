@@ -13,7 +13,8 @@
         android:layout_height="45dp"
         android:src="@drawable/ic_notification"
         android:layout_gravity="center"
-        android:layout_margin="13dp"/>
+        android:layout_margin="13dp"
+        android:tint="@color/white"/>
 
     <TextView
         android:layout_width="match_parent"
@@ -21,7 +22,9 @@
         android:text="Do You really want to \n log out?"
         android:textSize="19dp"
         android:gravity="center"
-        android:layout_margin="8dp" />
+        android:layout_margin="8dp"
+        android:textStyle="bold"
+        android:textColor="@color/white"/>
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -36,7 +39,7 @@
             android:layout_weight="1"
             android:gravity="center"
             android:text="No"
-            android:backgroundTint="@color/black"/>
+            android:backgroundTint="@color/my_secondary"/>
 
         <Button
             android:id="@+id/yesbnt"
@@ -46,7 +49,7 @@
             android:layout_weight="1"
             android:gravity="center"
             android:text="Yes"
-            android:backgroundTint="@color/black"/>
+            android:backgroundTint="@color/my_secondary"/>
 
     </LinearLayout>
 

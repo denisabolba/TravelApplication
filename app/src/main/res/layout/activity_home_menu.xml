@@ -57,7 +57,7 @@
                     android:layout_marginLeft="15dp"
                     android:layout_marginRight="15dp"
                     android:layout_marginBottom="15dp"
-                    app:cardBackgroundColor="#ffffff"
+                    app:cardBackgroundColor="@color/my_primary"
                     app:cardCornerRadius="8dp"
                     app:cardElevation="8dp">
 
@@ -72,7 +72,8 @@
                             android:layout_width="40dp"
                             android:layout_height="40dp"
                             android:layout_gravity="center_horizontal"
-                            android:src="@drawable/login"
+                            android:src="@drawable/ic_magnify"
+                            app:tint="@color/white"
                             android:layout_marginBottom="12dp"/>
 
                         <TextView
@@ -91,7 +92,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:id="@+id/d2"
-                    app:cardBackgroundColor="#ffffff"
+                    app:cardBackgroundColor="@color/my_primary"
                     android:layout_columnWeight="1"
                     android:layout_marginBottom="15dp"
                     android:layout_marginLeft="15dp"
@@ -110,7 +111,8 @@
                             android:layout_width="40dp"
                             android:layout_height="40dp"
                             android:layout_gravity="center_horizontal"
-                            android:src="@drawable/login"
+                            android:src="@drawable/notes"
+                            app:tint="@color/white"
                             android:layout_marginBottom="12dp"/>
 
                         <TextView
@@ -135,7 +137,7 @@
                     android:layout_marginLeft="15dp"
                     android:layout_marginRight="15dp"
                     android:layout_marginBottom="15dp"
-                    app:cardBackgroundColor="#ffffff"
+                    app:cardBackgroundColor="@color/my_primary"
                     app:cardCornerRadius="8dp"
                     app:cardElevation="8dp">
 
@@ -150,7 +152,8 @@
                             android:layout_width="40dp"
                             android:layout_height="40dp"
                             android:layout_gravity="center_horizontal"
-                            android:src="@drawable/login"
+                            android:src="@drawable/ic_chat"
+                            app:tint="@color/white"
                             android:layout_marginBottom="12dp"/>
 
                         <TextView
@@ -175,7 +178,7 @@
                     android:layout_marginLeft="15dp"
                     android:layout_marginRight="15dp"
                     android:layout_marginBottom="15dp"
-                    app:cardBackgroundColor="#ffffff"
+                    app:cardBackgroundColor="@color/my_primary"
                     app:cardCornerRadius="8dp"
                     app:cardElevation="8dp">
 
@@ -190,7 +193,8 @@
                             android:layout_width="40dp"
                             android:layout_height="40dp"
                             android:layout_gravity="center_horizontal"
-                            android:src="@drawable/login"
+                            android:src="@drawable/profile"
+                            app:tint="@color/white"
                             android:layout_marginBottom="12dp"/>
 
                         <TextView
@@ -215,7 +219,7 @@
                     android:layout_marginLeft="15dp"
                     android:layout_marginRight="15dp"
                     android:layout_marginBottom="15dp"
-                    app:cardBackgroundColor="#ffffff"
+                    app:cardBackgroundColor="@color/my_primary"
                     app:cardCornerRadius="8dp"
                     app:cardElevation="8dp">
 
@@ -231,7 +235,8 @@
                             android:layout_height="40dp"
                             android:layout_marginBottom="12dp"
                             android:layout_gravity="center_horizontal"
-                            android:src="@drawable/login"/>
+                            android:src="@drawable/contact"
+                            app:tint="@color/white"/>
 
                         <TextView
                             android:layout_width="wrap_content"
@@ -256,7 +261,7 @@
                     android:layout_marginLeft="15dp"
                     android:layout_marginRight="15dp"
                     android:layout_marginBottom="15dp"
-                    app:cardBackgroundColor="#ffffff"
+                    app:cardBackgroundColor="@color/my_primary"
                     app:cardCornerRadius="8dp"
                     app:cardElevation="8dp">
 
@@ -271,7 +276,8 @@
                             android:layout_width="40dp"
                             android:layout_height="40dp"
                             android:layout_gravity="center_horizontal"
-                            android:src="@drawable/login"
+                            android:src="@drawable/info"
+                            app:tint="@color/white"
                             android:layout_marginBottom="12dp"/>
 
                         <TextView
