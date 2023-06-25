@@ -11,8 +11,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.app.Dialog;
 import android.content.Intent;
 import android.os.Bundle;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
@@ -21,7 +19,6 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.PopupMenu;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
@@ -34,25 +31,24 @@ import com.google.firebase.database.ValueEventListener;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
 import java.util.Locale;
 
-public class HomeActivity extends AppCompatActivity {
+public class AdminTrips extends AppCompatActivity {
 
     EditText locationEditText, startDateEditText, endDateEditText;
     Button searchBtn;
     ImageButton sortBtn;
     RecyclerView recyclerView;
     RecyclerView.LayoutManager layoutManager;
-    NotePublicAdapter notePublicAdapter;
+    AdminTripAdapter notePublicAdapter;
     ArrayList<Note> noteArrayList, filteredNoteList;
     ArrayList<String> noteIdList;
     String sortField; // Câmpul după care se va face sortarea
     boolean ascending; // true pentru sortare ascendentă, false pentru sortare descendentă
     private DrawerLayout drawerLayout;
     private ActionBarDrawerToggle drawerToggle;
-    private  NavigationView navigationView;
+    private NavigationView navigationView;
     ImageView rightIcon,leftIcon;
     TextView toolbarTitle;
 
@@ -60,7 +56,7 @@ public class HomeActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_home);
+        setContentView(R.layout.activity_admin_trips);;
 
         leftIcon = findViewById(R.id.left_icon);
         rightIcon = findViewById(R.id.right_icon);
@@ -75,7 +71,7 @@ public class HomeActivity extends AppCompatActivity {
         rightIcon.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                showMenu2();
+               // showMenu2();
             }
         });
 
@@ -94,36 +90,36 @@ public class HomeActivity extends AppCompatActivity {
                 switch (id) {
                     case R.id.nav_home:
                         // Handle Home selection
-                        Intent intent = new Intent(HomeActivity.this, HomeMenuActivity.class);
+                        Intent intent = new Intent(AdminTrips.this, HomeMenuActivity.class);
                         startActivity(intent);
                         drawerLayout.closeDrawer(GravityCompat.START); // Close the drawer after handling the item selection
                         return true;
                     case R.id.nav_search:
-                        startActivity(new Intent(HomeActivity.this, HomeActivity.class));
+                        startActivity(new Intent(AdminTrips.this, HomeActivity.class));
                         drawerLayout.closeDrawer(GravityCompat.START);
                         return true;
                     case R.id.nav_trips:
-                        startActivity(new Intent(HomeActivity.this, MainActivity.class));
+                        startActivity(new Intent(AdminTrips.this, MainActivity.class));
                         drawerLayout.closeDrawer(GravityCompat.START);
                         return true;
                     case R.id.nav_chat:
-                        startActivity(new Intent(HomeActivity.this, MainActivity2.class));
+                        startActivity(new Intent(AdminTrips.this, MainActivity2.class));
                         drawerLayout.closeDrawer(GravityCompat.START);
                         return true;
                     case R.id.nav_profile:
-                        startActivity(new Intent(HomeActivity.this, ProfileActivity.class));
+                        startActivity(new Intent(AdminTrips.this, ProfileActivity.class));
                         drawerLayout.closeDrawer(GravityCompat.START);
                         return true;
                     case R.id.nav_terms:
-                        startActivity(new Intent(HomeActivity.this, TermsActivity.class));
+                        startActivity(new Intent(AdminTrips.this, TermsActivity.class));
                         drawerLayout.closeDrawer(GravityCompat.START);
                         return true;
                     case R.id.nav_contact:
-                        startActivity(new Intent(HomeActivity.this, ContactSupportActivity.class));
+                        startActivity(new Intent(AdminTrips.this, ContactSupportActivity.class));
                         drawerLayout.closeDrawer(GravityCompat.START);
                         return true;
                     case R.id.nav_logout:
-                        Dialog dialog = new Dialog(HomeActivity.this);
+                        Dialog dialog = new Dialog(AdminTrips.this);
                         dialog.setContentView(R.layout.dialog_layout);
                         Button no, yes;
                         yes = dialog.findViewById(R.id.yesbnt);
@@ -132,7 +128,7 @@ public class HomeActivity extends AppCompatActivity {
                             @Override
                             public void onClick(View v) {
                                 FirebaseAuth.getInstance().signOut();
-                                Intent intent = new Intent(HomeActivity.this,LoginActivity.class);
+                                Intent intent = new Intent(AdminTrips.this, LoginActivity.class);
                                 startActivity(intent);
                             }
                         });
@@ -166,7 +162,7 @@ public class HomeActivity extends AppCompatActivity {
         recyclerView = findViewById(R.id.recyclerView);
         layoutManager = new GridLayoutManager(this, 1);
         recyclerView.setLayoutManager(layoutManager);
-        notePublicAdapter = new NotePublicAdapter(HomeActivity.this, noteArrayList, noteIdList);
+        notePublicAdapter = new AdminTripAdapter(AdminTrips.this, noteArrayList, noteIdList);
         recyclerView.setAdapter(notePublicAdapter);
 
 
@@ -285,37 +281,37 @@ public class HomeActivity extends AppCompatActivity {
 
     }
 
-     void sortare(String theSortField, boolean theAscending) {
-         noteArrayList.sort((note1, note2) -> {
-             int result;
-             switch (theSortField) {
-                 case "location":
-                     result = note1.getTitle().compareTo(note2.getTitle());
-                     break;
-                 case "date":
-                     result = note1.getDate().compareTo(note2.getDate());
-                     break;
-                 case "title":
-                     result = note1.getDate().compareTo(note2.getTitle());
-                     break;
-                 default:
-                     throw new IllegalArgumentException("Câmpul specificat nu este valid.");
-             }
+    void sortare(String theSortField, boolean theAscending) {
+        noteArrayList.sort((note1, note2) -> {
+            int result;
+            switch (theSortField) {
+                case "location":
+                    result = note1.getTitle().compareTo(note2.getTitle());
+                    break;
+                case "date":
+                    result = note1.getDate().compareTo(note2.getDate());
+                    break;
+                case "title":
+                    result = note1.getDate().compareTo(note2.getTitle());
+                    break;
+                default:
+                    throw new IllegalArgumentException("Câmpul specificat nu este valid.");
+            }
 
-             // Inversează rezultatul dacă se dorește sortare descrescătoare
-             if (!theAscending) {
-                 result = -result;
-             }
+            // Inversează rezultatul dacă se dorește sortare descrescătoare
+            if (!theAscending) {
+                result = -result;
+            }
 
-             return result;
-         });
+            return result;
+        });
 
-         // Actualizează afișarea RecyclerView-ului
-         notePublicAdapter.notifyDataSetChanged();
+        // Actualizează afișarea RecyclerView-ului
+        notePublicAdapter.notifyDataSetChanged();
     }
 
     void showMenu() {
-        PopupMenu popupMenu = new PopupMenu(HomeActivity.this, sortBtn);
+        PopupMenu popupMenu = new PopupMenu(AdminTrips.this, sortBtn);
         popupMenu.getMenu().add("Ascending by Location");
         popupMenu.getMenu().add("Ascending by Title");
         popupMenu.getMenu().add("Ascending by StartDate");
@@ -368,7 +364,7 @@ public class HomeActivity extends AppCompatActivity {
         });
     }
     void showMenu2() {
-        PopupMenu popupMenu = new PopupMenu(HomeActivity.this, rightIcon);
+        PopupMenu popupMenu = new PopupMenu(AdminTrips.this, rightIcon);
         popupMenu.getMenu().add("Home");
         popupMenu.getMenu().add("Profile");
         popupMenu.getMenu().add("Contact Support");
@@ -379,22 +375,22 @@ public class HomeActivity extends AppCompatActivity {
             public boolean onMenuItemClick(MenuItem menuItem) {
                 if (menuItem.getTitle() == "Home") {
                     FirebaseAuth.getInstance().signOut();
-                    startActivity(new Intent(HomeActivity.this, HomeMenuActivity.class));
+                    startActivity(new Intent(AdminTrips.this, HomeMenuActivity.class));
                     finish();
                     return true;
                 }
                 if (menuItem.getTitle() == "Logout") {
                     FirebaseAuth.getInstance().signOut();
-                    startActivity(new Intent(HomeActivity.this, LoginActivity.class));
+                    startActivity(new Intent(AdminTrips.this, LoginActivity.class));
                     finish();
                     return true;
                 }
                 if (menuItem.getTitle() == "Profile") {
-                    startActivity(new Intent(HomeActivity.this, ProfileActivity.class));
+                    startActivity(new Intent(AdminTrips.this, ProfileActivity.class));
                     return true;
                 }
                 if (menuItem.getTitle() == "Contact Support") {
-                    startActivity(new Intent(HomeActivity.this, ContactSupportActivity.class));
+                    startActivity(new Intent(AdminTrips.this, ContactSupportActivity.class));
                     return true;
                 }
                 return false;

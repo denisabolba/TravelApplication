@@ -5,25 +5,26 @@
     android:layout_height="match_parent"
     xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical"
-    android:padding="16dp"
+
     android:background="@color/my_primary"
     tools:context=".ProfileActivity">
+    <include
+        android:id="@+id/toolbar"
+        layout="@layout/back_toolbar" />
 
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:padding="16dp">
 
     <de.hdodenhof.circleimageview.CircleImageView
         android:id="@+id/profile_image"
-        android:layout_width="80dp"
-        android:layout_height="80dp"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
         android:src="@drawable/ic_camera"
         app:civ_border_color="@color/white"
-        android:layout_marginTop="7dp"
         app:civ_border_width="2dp"
-        android:layout_gravity="center"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.226" />
+        android:layout_centerHorizontal="true" />
 
     <TextView
         android:id="@+id/profile_name"
@@ -31,8 +32,9 @@
         android:layout_height="wrap_content"
         android:text="John Doe"
         android:textSize="24sp"
-        android:layout_marginTop="16dp"
-        android:layout_gravity="center_horizontal" />
+        android:layout_marginTop="3dp"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@id/profile_image"/>
 
     <TextView
         android:id="@+id/profile_email"
@@ -40,8 +42,9 @@
         android:layout_height="wrap_content"
         android:text="johndoe@example.com"
         android:textSize="16sp"
-        android:layout_marginTop="8dp"
-        android:layout_gravity="center_horizontal" />
+        android:layout_marginTop="3dp"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@id/profile_name"/>
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -50,9 +53,10 @@
         android:orientation="vertical"
         android:padding="8dp"
         android:background="@drawable/white_background"
-        android:layout_marginStart="24dp"
-        android:layout_marginEnd="24dp"
-        android:layout_marginTop="30dp">
+        android:layout_marginStart="4dp"
+        android:layout_marginEnd="4dp"
+        android:layout_marginTop="4dp"
+        android:layout_below="@+id/profile_email">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -188,10 +192,12 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Edit Profile"
-        android:layout_gravity="center_horizontal"
-        android:layout_marginTop="16dp" />
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="10dp"
+        android:layout_below="@id/linearLayout"/>
 
-    <!-- Add other profile information or functionality here -->
+
+    </RelativeLayout>
 
 </LinearLayout>
 

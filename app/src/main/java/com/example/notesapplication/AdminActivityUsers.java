@@ -32,7 +32,7 @@ public class AdminActivityUsers extends AppCompatActivity {
 
     FirebaseAuth auth;
     RecyclerView mainUserRecyclerView;
-    UserAdapter adapter;
+    AdminUserAdapter adapter;
     FirebaseDatabase database;
     ArrayList<Users> usersArrayList, originalArrayList;
     ImageView imglogout,cumbut,setbut;
@@ -65,7 +65,7 @@ public class AdminActivityUsers extends AppCompatActivity {
                         startActivity(intent);
                         drawerLayout.closeDrawer(GravityCompat.START); // Close the drawer after handling the item selection
                         return true;
-                    case R.id.nav_notes:
+                    case R.id.nav_trips:
                         startActivity(new Intent(AdminActivityUsers.this, MainActivity.class));
                         drawerLayout.closeDrawer(GravityCompat.START);
                         return true;
@@ -87,7 +87,7 @@ public class AdminActivityUsers extends AppCompatActivity {
                             @Override
                             public void onClick(View v) {
                                 FirebaseAuth.getInstance().signOut();
-                                Intent intent = new Intent(AdminActivityUsers.this,LoginActivity.class);
+                                Intent intent = new Intent(AdminActivityUsers.this, LoginActivity.class);
                                 startActivity(intent);
                             }
                         });
@@ -126,7 +126,7 @@ public class AdminActivityUsers extends AppCompatActivity {
         mainUserRecyclerView = findViewById(R.id.mainUserRecyclerView);
         mainUserRecyclerView.requestFocus();
         mainUserRecyclerView.setLayoutManager(new LinearLayoutManager(this));
-        adapter = new UserAdapter(AdminActivityUsers.this,usersArrayList);
+        adapter = new AdminUserAdapter(AdminActivityUsers.this,usersArrayList);
         mainUserRecyclerView.setAdapter(adapter);
 
         SearchView searchView = findViewById(R.id.searchView);
@@ -158,8 +158,9 @@ public class AdminActivityUsers extends AppCompatActivity {
                 originalArrayList.clear();
                 for(DataSnapshot dataSnapshot: snapshot.getChildren()){
                     Users users = dataSnapshot.getValue(Users.class);
-                    usersArrayList.add(users);
-                    originalArrayList.add(users);
+                    if(!users.userId.equals(auth.getCurrentUser().getUid())) {
+                        usersArrayList.add(users);
+                        originalArrayList.add(users);}
                 }
                 adapter.notifyDataSetChanged();
             }

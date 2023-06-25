@@ -3,26 +3,22 @@ package com.example.notesapplication;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
-import androidx.core.app.NotificationCompat;
-import androidx.core.app.NotificationManagerCompat;
+
 import androidx.core.content.ContextCompat;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
-import android.app.AlarmManager;
+
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
-import android.app.Notification;
-import android.app.NotificationChannel;
-import android.app.NotificationManager;
-import android.app.PendingIntent;
+
 import android.app.TimePickerDialog;
-import android.content.Context;
+
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.graphics.Color;
+
 import android.location.Location;
 import android.net.Uri;
 import android.os.Build;
@@ -33,6 +29,7 @@ import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
@@ -45,10 +42,9 @@ import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
+
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
-import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -56,35 +52,22 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.auth.User;
-import com.google.firebase.storage.StorageReference;
-import com.squareup.picasso.Picasso;
 
-import org.w3c.dom.Document;
-
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
-import java.util.Objects;
+
 
 public class NoteDetailsActivity extends AppCompatActivity {
 
     private static final String TAG = "GoogleMaps";
     private static final int ERROR_DIALOG_REQUEST = 9001;
     private static final int SECOND_ACTIVITY_REQUEST_CODE = 1;
-    EditText titleEditText, contentEditText, dateEditText, timeEditText, locationEditText,endDateEditText;
+    EditText titleEditText, contentEditText, dateEditText, timeEditText, locationEditText, endDateEditText;
     ImageButton saveNoteButton, dateNoteButton, timeNoteButton, endDateNoteButton;
-    Button btnNotification, btnSharePublic,btnContactUser;
+    Button btnNotification, btnSharePublic, btnContactUser;
     TextView pageTitleTextView, deleteNoteTextViewBtn;
-    String date, endDate, time, title, content, docId,nou, location,destination, sharerId;
+    String date, endDate, time, title, content, docId, nou, location, destination, sharerId;
     boolean isEditMode = false, isNewMode = false;
     Calendar calendar = Calendar.getInstance();
     int currentHour = calendar.get(Calendar.HOUR);
@@ -93,18 +76,28 @@ public class NoteDetailsActivity extends AppCompatActivity {
     int currentMonth = calendar.get(Calendar.MONTH);
     int currentDay = calendar.get(Calendar.DAY_OF_MONTH);
     final Calendar myCalendar = Calendar.getInstance();
-    Timestamp timestamp;
+
 
     private FusedLocationProviderClient fusedLocationClient;
     private LocationRequest locationRequest;
     private LocationCallback locationCallback;
     List<Users> userList = new ArrayList<>();
 
+    ImageView backBtn;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_note_details);
+
+        backBtn = findViewById(R.id.back);
+        backBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
 
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
 
@@ -139,7 +132,7 @@ public class NoteDetailsActivity extends AppCompatActivity {
         if (docId != null && !docId.isEmpty()) {
             isEditMode = true;
             nou = getIntent().getStringExtra("nou");
-            if(nou!=null && !nou.isEmpty()){
+            if (nou != null && !nou.isEmpty()) {
                 isEditMode = false;
                 isNewMode = true;
             }
@@ -161,9 +154,9 @@ public class NoteDetailsActivity extends AppCompatActivity {
                             // Utilizați valorile profilePic și userName în codul dvs.
                             // ...
                             Intent intent = new Intent(NoteDetailsActivity.this, chatWin.class);
-                            intent.putExtra("name",userName);
-                            intent.putExtra("receiverImg",profilePic);
-                            intent.putExtra("uid",sharerId);
+                            intent.putExtra("name", userName);
+                            intent.putExtra("receiverImg", profilePic);
+                            intent.putExtra("uid", sharerId);
                             startActivity(intent);
 
 
@@ -180,7 +173,7 @@ public class NoteDetailsActivity extends AppCompatActivity {
             }
         });
 
-        if(isNewMode){
+        if (isNewMode) {
             btnContactUser.setVisibility(View.VISIBLE);
             DatabaseReference reference = database.getReference().child("notes").child(userId).child("my_notes");
             reference.addValueEventListener(new ValueEventListener() {
@@ -257,10 +250,10 @@ public class NoteDetailsActivity extends AppCompatActivity {
                 String noteLocation = locationEditText.getText().toString();
                 String sharerId = "";
 
-                Note note = new Note(noteTitle, noteContent, noteDate, noteEndDate, noteTime, formattedDate, noteLocation,sharerId);
+                Note note = new Note(noteTitle, noteContent, noteDate, noteEndDate, noteTime, formattedDate, noteLocation, sharerId);
                 DatabaseReference reference;
 
-                sendEmail(noteTitle,noteContent,isEditMode);
+                sendEmail(noteTitle, noteContent, isEditMode);
 
 
                 if (isEditMode) {
@@ -411,7 +404,6 @@ public class NoteDetailsActivity extends AppCompatActivity {
                                 });
 
 
-
                             }
                         });
                         dialogBuilder.show();
@@ -424,9 +416,6 @@ public class NoteDetailsActivity extends AppCompatActivity {
                         // Handle the error
                     }
                 });
-
-
-
 
 
             }
@@ -477,109 +466,6 @@ public class NoteDetailsActivity extends AppCompatActivity {
         });
     }
 
-    public void scheduleNotification() {
-        String desiredDate = dateEditText.getText().toString(); // Replace 'editText' with the ID of your EditText
-
-        // Convert the desired date to a timestamp
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd", Locale.getDefault());
-        try {
-            Date desiredDateTime = dateFormat.parse(desiredDate);
-
-            Calendar desiredCalendar = Calendar.getInstance();
-            desiredCalendar.setTime(desiredDateTime);
-
-            // Get the current date and time
-            Calendar currentCalendar = Calendar.getInstance();
-
-            SimpleDateFormat logDateFormat = new SimpleDateFormat("yyyy/MM/dd", Locale.getDefault());
-            Log.d("Notification", "Current Date: " + logDateFormat.format(currentCalendar.getTime()));
-            Log.d("Notification", "Desired Date: " + logDateFormat.format(desiredCalendar.getTime()));
-
-            // Compare the current date with the desired date
-            if (currentCalendar.get(Calendar.YEAR) == desiredCalendar.get(Calendar.YEAR)
-                    && currentCalendar.get(Calendar.MONTH) == desiredCalendar.get(Calendar.MONTH)
-                    && currentCalendar.get(Calendar.DAY_OF_MONTH) == desiredCalendar.get(Calendar.DAY_OF_MONTH)) {
-
-                // Set the desired time component
-                desiredCalendar.set(Calendar.HOUR_OF_DAY, 15); // Set to 2:00 PM
-                desiredCalendar.set(Calendar.MINUTE, 16);
-                desiredCalendar.set(Calendar.SECOND, 0);
-                desiredCalendar.set(Calendar.MILLISECOND, 0);
-
-
-
-
-                // Get the modified time as the trigger time
-                long triggerTime = desiredCalendar.getTimeInMillis();
-
-                // Get the modified time as the trigger time
-                //long triggerTime = calendar.getTimeInMillis();
-
-                // Create an intent for the broadcast receiver
-                Intent intent = new Intent(this, NotificationReceiver.class);
-                PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 0, intent, 0);
-
-                // Schedule the notification using AlarmManager
-                AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
-                if (alarmManager != null) {
-                    alarmManager.set(AlarmManager.RTC_WAKEUP, triggerTime, pendingIntent);
-                }
-            }
-            } catch(ParseException e){
-                e.printStackTrace();
-            }
-
-    }
-
-    public void makeNotification() throws ParseException {
-
-        String dateStr = dateEditText.getText().toString();
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy/M/dd");
-
-            Date date = dateFormat.parse(dateStr);
-
-            // Extract year, month, and day from the parsed date
-            Calendar calendar = Calendar.getInstance();
-            calendar.setTime(date);
-            int year = calendar.get(Calendar.YEAR);
-            int month = calendar.get(Calendar.MONTH) + 1; // Add 1 because months start from 0
-            int day = calendar.get(Calendar.DAY_OF_MONTH);
-
-
-
-        if (currentDay==day && currentMonth==month && currentYear==year)
-        {
-            String channelID = "CHANNEL_ID_NOTIFICATION";
-            NotificationCompat.Builder builder = new NotificationCompat.Builder(this, channelID)
-                    .setSmallIcon(android.R.drawable.stat_notify_sync)
-                    .setContentTitle("First Notification")
-                    .setContentText("This is the body of the notification")
-                    .setAutoCancel(true)
-                    .setPriority(NotificationCompat.PRIORITY_DEFAULT);
-
-            Intent intent = new Intent(getApplicationContext(), NotificationActivity.class);
-            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-            intent.putExtra("data", "Some value to be passed here");
-
-            PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(), 0, intent, PendingIntent.FLAG_MUTABLE);
-            builder.setContentIntent(pendingIntent);
-
-            NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-
-
-            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
-                NotificationChannel notificationChannel = notificationManager.getNotificationChannel(channelID);
-                if (notificationChannel == null) {
-                    int importance = NotificationManager.IMPORTANCE_HIGH;
-                    notificationChannel = new NotificationChannel(channelID, "Some description", importance);
-                    notificationChannel.setLightColor(Color.GREEN);
-                    notificationChannel.enableVibration(true);
-                    notificationManager.createNotificationChannel(notificationChannel);
-                }
-            }
-            notificationManager.notify(0, builder.build());
-        }
-    }
 
     private void chooseTime() {
         TimePickerDialog dialog = new TimePickerDialog(this, R.style.DialogTheme, new TimePickerDialog.OnTimeSetListener() {
@@ -610,6 +496,7 @@ public class NoteDetailsActivity extends AppCompatActivity {
         }, currentYear, currentMonth, currentDay);
         dialog.show();
     }
+
     private void chooseEndDate() {
         DatePickerDialog dialog = new DatePickerDialog(this, R.style.DialogTheme, new DatePickerDialog.OnDateSetListener() {
             @Override
@@ -740,21 +627,22 @@ public class NoteDetailsActivity extends AppCompatActivity {
             }
         }
     }
-    public boolean isServicesOK(){
-        Log.d(TAG,"isServicesOK: checking google services version");
+
+    public boolean isServicesOK() {
+        Log.d(TAG, "isServicesOK: checking google services version");
 
         int available = GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(NoteDetailsActivity.this);
 
-        if(available == ConnectionResult.SUCCESS){
+        if (available == ConnectionResult.SUCCESS) {
             //everything is fine and the user can make requests
-            Log.d(TAG,"isServicesOK: Google Play Services is working");
+            Log.d(TAG, "isServicesOK: Google Play Services is working");
             return true;
-        }else if(GoogleApiAvailability.getInstance().isUserResolvableError(available)){
+        } else if (GoogleApiAvailability.getInstance().isUserResolvableError(available)) {
             //an error occured but we can resolve it
-            Log.d(TAG,"isServicesOK: an error occured but we can fix it");
-            Dialog dialog = GoogleApiAvailability.getInstance().getErrorDialog(NoteDetailsActivity.this,available,ERROR_DIALOG_REQUEST);
+            Log.d(TAG, "isServicesOK: an error occured but we can fix it");
+            Dialog dialog = GoogleApiAvailability.getInstance().getErrorDialog(NoteDetailsActivity.this, available, ERROR_DIALOG_REQUEST);
             dialog.show();
-        }else{
+        } else {
             Toast.makeText(this, "You can't make map requests", Toast.LENGTH_SHORT).show();
         }
         return false;
@@ -787,17 +675,16 @@ public class NoteDetailsActivity extends AppCompatActivity {
         });
     }
 
-    private void sendEmail(String title,String content,Boolean isEditMode){
+    private void sendEmail(String title, String content, Boolean isEditMode) {
         FirebaseAuth auth = FirebaseAuth.getInstance();
         FirebaseUser user = auth.getCurrentUser();
         String userEmail = user.getEmail();
 
         String recipientEmail = userEmail;
         String emailSubject;
-        if(isEditMode){
+        if (isEditMode) {
             emailSubject = "A new note has been created";
-        }
-        else {
+        } else {
             emailSubject = "A note has been edited";
         }
         String emailBody = "Title: " + title + "\n" + "Content: " + content;
@@ -805,4 +692,5 @@ public class NoteDetailsActivity extends AppCompatActivity {
         JavaMailAPI mailAPI = new JavaMailAPI(this, recipientEmail, emailSubject, emailBody);
         mailAPI.execute();
     }
+
 }

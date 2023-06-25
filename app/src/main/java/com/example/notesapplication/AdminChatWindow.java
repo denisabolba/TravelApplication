@@ -12,7 +12,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.PopupMenu;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -33,7 +32,7 @@ import java.util.Date;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
-public class chatWin extends AppCompatActivity {
+public class AdminChatWindow extends AppCompatActivity {
 
     String reciverimg, reciverUid, reciverName, SenderUID;
     CircleImageView profile;
@@ -55,7 +54,7 @@ public class chatWin extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_chat_win);
+        setContentView(R.layout.activity_admin_chat_window);
 
 
         leftIcon = findViewById(R.id.left_icon);
@@ -71,7 +70,7 @@ public class chatWin extends AppCompatActivity {
         rightIcon.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                showMenu();
+
             }
         });
 
@@ -80,6 +79,29 @@ public class chatWin extends AppCompatActivity {
         firebaseAuth = FirebaseAuth.getInstance();
         FirebaseUser currentU = FirebaseAuth.getInstance().getCurrentUser();
         String uId = currentU.getUid();
+
+
+
+
+        DatabaseReference senderReference = database.getReference().child("publicNotes").child(uId);
+
+        senderReference.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                // Retrieve the note data
+                senderImg = dataSnapshot.child("profilePic").getValue(String.class);
+
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError error) {
+                // Handle onCancelled
+            }
+        });
+
+
+
 
         reciverName = getIntent().getStringExtra("name");
         reciverimg = getIntent().getStringExtra("receiverImg");
@@ -95,7 +117,7 @@ public class chatWin extends AppCompatActivity {
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
         linearLayoutManager.setStackFromEnd(true);
         messageAdpter.setLayoutManager(linearLayoutManager);
-        mmessagesAdpter = new messagesAdapter(chatWin.this, messagesArrayList);
+        mmessagesAdpter = new messagesAdapter(AdminChatWindow.this, messagesArrayList);
         messageAdpter.setAdapter(mmessagesAdpter);
 
 
@@ -130,7 +152,7 @@ public class chatWin extends AppCompatActivity {
         reference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                senderImg = snapshot.child("profilePic").getValue().toString();
+                senderImg = senderImg;
                 reciverIImg = reciverimg;
             }
 
@@ -145,7 +167,7 @@ public class chatWin extends AppCompatActivity {
             public void onClick(View view) {
                 String message = textmsg.getText().toString();
                 if (message.isEmpty()) {
-                    Toast.makeText(chatWin.this, "Enter The Message First", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(AdminChatWindow.this, "Enter The Message First", Toast.LENGTH_SHORT).show();
                     return;
                 }
                 textmsg.setText("");
@@ -175,39 +197,4 @@ public class chatWin extends AppCompatActivity {
 
     }
 
-    void showMenu() {
-        PopupMenu popupMenu = new PopupMenu(chatWin.this, rightIcon);
-        popupMenu.getMenu().add("Home");
-        popupMenu.getMenu().add("Profile");
-        popupMenu.getMenu().add("Contact Support");
-        popupMenu.getMenu().add("Logout");
-        popupMenu.show();
-        popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
-            @Override
-            public boolean onMenuItemClick(MenuItem menuItem) {
-                if (menuItem.getTitle() == "Home") {
-                    FirebaseAuth.getInstance().signOut();
-                    startActivity(new Intent(chatWin.this, HomeMenuActivity.class));
-                    finish();
-                    return true;
-                }
-                if (menuItem.getTitle() == "Logout") {
-                    FirebaseAuth.getInstance().signOut();
-                    startActivity(new Intent(chatWin.this, LoginActivity.class));
-                    finish();
-                    return true;
-                }
-                if (menuItem.getTitle() == "Profile") {
-                    startActivity(new Intent(chatWin.this, ProfileActivity.class));
-                    return true;
-                }
-                if (menuItem.getTitle() == "Contact Support") {
-                    startActivity(new Intent(chatWin.this, ContactSupportActivity.class));
-                    return true;
-                }
-                return false;
-            }
-        });
-
-    }
 }

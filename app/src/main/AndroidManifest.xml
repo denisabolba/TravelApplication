@@ -20,6 +20,21 @@
         android:theme="@style/Theme.NotesApplication"
         tools:targetApi="31">
         <activity
+            android:name=".AdminChatWindow"
+            android:exported="false" />
+        <activity
+            android:name=".Deleting"
+            android:exported="false" />
+        <activity
+            android:name=".AdminTrips"
+            android:exported="false" />
+        <activity
+            android:name=".AdminHome"
+            android:exported="false" />
+        <activity
+            android:name=".TermsActivity"
+            android:exported="false" />
+        <activity
             android:name=".HomeMenuActivity"
             android:exported="false" />
         <activity
@@ -28,9 +43,6 @@
         <activity
             android:name=".HomeActivity"
             android:exported="false" />
-
-        <receiver android:name=".NotificationReceiver" />
-
         <activity
             android:name=".Setting"
             android:exported="false" />
@@ -56,9 +68,6 @@
 
         <activity
             android:name=".GoogleMaps"
-            android:exported="false" />
-        <activity
-            android:name=".NotificationActivity"
             android:exported="false" />
         <activity
             android:name=".NoteDetailsActivity"

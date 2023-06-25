@@ -8,18 +8,40 @@
             android:icon="@drawable/home"
             android:title="Home" />
         <item
-            android:id="@+id/nav_notes"
-            android:icon="@drawable/notes"
-            android:title="Trips" />
+            android:id="@+id/nav_search"
+            android:icon="@drawable/ic_magnify"
+            android:title="Search Trips" />
         <item
-            android:id="@+id/nav_chat"
-            android:icon="@drawable/ic_chat"
-            android:title="Chat" />
+            android:id="@+id/nav_trips"
+            android:icon="@drawable/notes"
+            android:title="My Trips" />
+        <item
+            android:id="@+id/nav_info"
+            android:icon="@drawable/info"
+            android:title="Information" />
+
 
     </group>
 
+    <item android:title="Communicate">
+
+        <menu>
+            <item
+                android:id="@+id/nav_chat"
+                android:icon="@drawable/ic_chat"
+                android:title="Chat" />
+
+            <item
+                android:id="@+id/nav_contact"
+                android:icon="@drawable/contact"
+                android:title="Contact support" />
+
+        </menu>
+
+    </item>
+
     <group android:checkableBehavior="single">
-        <item android:title="Profile">
+        <item android:title="Settings">
 
             <menu>
 
@@ -28,28 +50,25 @@
                     android:icon="@drawable/profile"
                     android:title="Profile" />
                 <item
-                    android:id="@+id/nav_logout"
-                    android:icon="@drawable/ic_notification"
-                    android:title="Log out" />
+                    android:id="@+id/nav_terms"
+                    android:icon="@drawable/terms"
+                    android:title="Terms and Conditions" />
+                <item
+                    android:id="@+id/nav_privacy"
+                    android:icon="@drawable/privacy"
+                    android:title="Privacy Policy" />
+
 
             </menu>
 
         </item>
+        <item
+            android:id="@+id/nav_logout"
+            android:icon="@drawable/ic_notification"
+            android:title="Log out" />
 
 
     </group>
 
-    <item android:title="Communicate">
-
-        <menu>
-
-            <item
-                android:id="@+id/nav_contact"
-                android:title="Contact support"
-                android:icon="@drawable/contact"/>
-
-        </menu>
-
-    </item>
 
 </menu>

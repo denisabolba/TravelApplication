@@ -5,8 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/my_primary"
-    tools:context=".chatWin">
-
+    tools:context=".AdminChatWindow">
 
     <include
         android:id="@+id/toolbar"

@@ -17,6 +17,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.PopupMenu;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -47,12 +48,14 @@ public class MainActivity extends AppCompatActivity {
     ArrayList<Note> noteArrayList;
     ArrayList<String> noteIdList;
 
-    ImageButton menuBtn;
+    ImageView menuBtn,leftIcon;
+    TextView title;
     NoteAdapter noteAdapter;
     private DrawerLayout drawerLayout;
     private ActionBarDrawerToggle drawerToggle;
     private  NavigationView navigationView;
     Toolbar toolbar;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -110,7 +113,6 @@ public class MainActivity extends AppCompatActivity {
 
 
 
-
         drawerLayout = findViewById(R.id.drawer_layout);
         drawerToggle = new ActionBarDrawerToggle(this, drawerLayout, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawerLayout.addDrawerListener(drawerToggle);
@@ -124,11 +126,15 @@ public class MainActivity extends AppCompatActivity {
                 switch (id) {
                     case R.id.nav_home:
                         // Handle Home selection
-                        Intent intent = new Intent(MainActivity.this, HomeActivity.class);
+                        Intent intent = new Intent(MainActivity.this, HomeMenuActivity.class);
                         startActivity(intent);
                         drawerLayout.closeDrawer(GravityCompat.START); // Close the drawer after handling the item selection
                         return true;
-                    case R.id.nav_notes:
+                    case R.id.nav_search:
+                        startActivity(new Intent(MainActivity.this, HomeActivity.class));
+                        drawerLayout.closeDrawer(GravityCompat.START);
+                        return true;
+                    case R.id.nav_trips:
                         startActivity(new Intent(MainActivity.this, MainActivity.class));
                         drawerLayout.closeDrawer(GravityCompat.START);
                         return true;
@@ -167,6 +173,10 @@ public class MainActivity extends AppCompatActivity {
                         startActivity(new Intent(MainActivity.this, ContactSupportActivity.class));
                         drawerLayout.closeDrawer(GravityCompat.START);
                         return true;
+                    case R.id.nav_terms:
+                        startActivity(new Intent(MainActivity.this, TermsActivity.class));
+                        drawerLayout.closeDrawer(GravityCompat.START);
+                        return true;
                 }
                 // Handle other menu item actions if required
 
@@ -175,9 +185,22 @@ public class MainActivity extends AppCompatActivity {
         });
 
 
+        leftIcon = findViewById(R.id.left_icon);
+        title = findViewById(R.id.toolbar_title);
+
+        leftIcon.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
+
+        title.setText("My Trips");
+
+
         addNoteBtn = findViewById(R.id.add_note_btn);
         recyclerView = findViewById(R.id.recyler_view);
-        menuBtn = findViewById(R.id.menu_btn);
+        menuBtn = findViewById(R.id.right_icon);
 
         FirebaseDatabase firbaseDatabase = FirebaseDatabase.getInstance();
         FirebaseAuth auth = FirebaseAuth.getInstance();
@@ -237,13 +260,20 @@ public class MainActivity extends AppCompatActivity {
     }
     void showMenu(){
         PopupMenu popupMenu  = new PopupMenu(MainActivity.this,menuBtn);
-        popupMenu.getMenu().add("Logout");
+        popupMenu.getMenu().add("Home");
         popupMenu.getMenu().add("Profile");
         popupMenu.getMenu().add("Contact Support");
+        popupMenu.getMenu().add("Logout");
         popupMenu.show();
         popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem menuItem) {
+                if(menuItem.getTitle()=="Home"){
+                    FirebaseAuth.getInstance().signOut();
+                    startActivity(new Intent(MainActivity.this,HomeMenuActivity.class));
+                    finish();
+                    return true;
+                }
                 if(menuItem.getTitle()=="Logout"){
                     FirebaseAuth.getInstance().signOut();
                     startActivity(new Intent(MainActivity.this,LoginActivity.class));

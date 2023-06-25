@@ -15,7 +15,10 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.PopupMenu;
 import android.widget.SearchView;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
@@ -35,7 +38,8 @@ public class MainActivity2 extends AppCompatActivity {
     UserAdapter adapter;
     FirebaseDatabase database;
     ArrayList<Users> usersArrayList, originalArrayList;
-    ImageView imglogout,cumbut,setbut;
+    ImageView imglogout,leftIcon,rightIcon;
+    TextView title;
     private DrawerLayout drawerLayout;
     private ActionBarDrawerToggle drawerToggle;
     private  NavigationView navigationView;
@@ -45,6 +49,25 @@ public class MainActivity2 extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main2);
+
+        leftIcon = findViewById(R.id.left_icon);
+        rightIcon = findViewById(R.id.right_icon);
+        title = findViewById(R.id.toolbar_title);
+
+        leftIcon.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
+        rightIcon.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showMenu();
+            }
+        });
+        title.setText("Chat");
+
 
         drawerLayout = findViewById(R.id.drawer_layout);
         drawerToggle = new ActionBarDrawerToggle(this, drawerLayout, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
@@ -59,11 +82,15 @@ public class MainActivity2 extends AppCompatActivity {
                 switch (id) {
                     case R.id.nav_home:
                         // Handle Home selection
-                        Intent intent = new Intent(MainActivity2.this, MainActivity2.class);
+                        Intent intent = new Intent(MainActivity2.this, HomeMenuActivity.class);
                         startActivity(intent);
                         drawerLayout.closeDrawer(GravityCompat.START); // Close the drawer after handling the item selection
                         return true;
-                    case R.id.nav_notes:
+                    case R.id.nav_search:
+                        startActivity(new Intent(MainActivity2.this, HomeActivity.class));
+                        drawerLayout.closeDrawer(GravityCompat.START);
+                        return true;
+                    case R.id.nav_trips:
                         startActivity(new Intent(MainActivity2.this, MainActivity.class));
                         drawerLayout.closeDrawer(GravityCompat.START);
                         return true;
@@ -73,6 +100,10 @@ public class MainActivity2 extends AppCompatActivity {
                         return true;
                     case R.id.nav_profile:
                         startActivity(new Intent(MainActivity2.this, ProfileActivity.class));
+                        drawerLayout.closeDrawer(GravityCompat.START);
+                        return true;
+                    case R.id.nav_terms:
+                        startActivity(new Intent(MainActivity2.this, TermsActivity.class));
                         drawerLayout.closeDrawer(GravityCompat.START);
                         return true;
                     case R.id.nav_logout:
@@ -156,8 +187,10 @@ public class MainActivity2 extends AppCompatActivity {
                 originalArrayList.clear();
                 for(DataSnapshot dataSnapshot: snapshot.getChildren()){
                     Users users = dataSnapshot.getValue(Users.class);
-                    usersArrayList.add(users);
-                    originalArrayList.add(users);
+                    if(!users.userId.equals(auth.getCurrentUser().getUid())) {
+                        usersArrayList.add(users);
+                        originalArrayList.add(users);
+                    }
                 }
                 adapter.notifyDataSetChanged();
             }
@@ -216,5 +249,40 @@ public class MainActivity2 extends AppCompatActivity {
             }
         }
         adapter.notifyDataSetChanged();
+    }
+    void showMenu() {
+        PopupMenu popupMenu = new PopupMenu(MainActivity2.this, rightIcon);
+        popupMenu.getMenu().add("Home");
+        popupMenu.getMenu().add("Profile");
+        popupMenu.getMenu().add("Contact Support");
+        popupMenu.getMenu().add("Logout");
+        popupMenu.show();
+        popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem menuItem) {
+                if (menuItem.getTitle() == "Home") {
+                    FirebaseAuth.getInstance().signOut();
+                    startActivity(new Intent(MainActivity2.this, HomeMenuActivity.class));
+                    finish();
+                    return true;
+                }
+                if (menuItem.getTitle() == "Logout") {
+                    FirebaseAuth.getInstance().signOut();
+                    startActivity(new Intent(MainActivity2.this, LoginActivity.class));
+                    finish();
+                    return true;
+                }
+                if (menuItem.getTitle() == "Profile") {
+                    startActivity(new Intent(MainActivity2.this, ProfileActivity.class));
+                    return true;
+                }
+                if (menuItem.getTitle() == "Contact Support") {
+                    startActivity(new Intent(MainActivity2.this, ContactSupportActivity.class));
+                    return true;
+                }
+                return false;
+            }
+        });
+
     }
 }

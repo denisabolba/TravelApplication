@@ -19,29 +19,27 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
 
-public class NotePublicAdapter extends RecyclerView.Adapter<NotePublicAdapter.viewholder> {
-    Context HomeActivity;
-    public ArrayList<Note> noteArrayList;
+public class AdminTripAdapter extends RecyclerView.Adapter<AdminTripAdapter.viewholder> {
+    Context AdminTrips;
+    ArrayList<Note> noteArrayList;
     ArrayList<String> noteIdList;
     String sharerId;
-    public NotePublicAdapter(Activity HomeActivity, ArrayList<Note> noteArrayList, ArrayList<String> noteIdList) {
-        this.HomeActivity=HomeActivity;
+    public AdminTripAdapter(Activity AdminTrips, ArrayList<Note> noteArrayList, ArrayList<String> noteIdList) {
+        this.AdminTrips=AdminTrips;
         this.noteArrayList=noteArrayList;
         this.noteIdList = noteIdList;
     }
 
     @NonNull
     @Override
-    public NotePublicAdapter.viewholder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(HomeActivity).inflate(R.layout.custom_grid_layout,parent,false);
-        return new NotePublicAdapter.viewholder(view);
+    public AdminTripAdapter.viewholder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        View view = LayoutInflater.from(AdminTrips).inflate(R.layout.custom_grid_layout,parent,false);
+        return new AdminTripAdapter.viewholder(view);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull NotePublicAdapter.viewholder holder, int position) {
+    public void onBindViewHolder(@NonNull AdminTripAdapter.viewholder holder, int position) {
 
         Note note = noteArrayList.get(position);
         String noteIdToUpdate = noteIdList.get(position);
@@ -85,7 +83,7 @@ public class NotePublicAdapter extends RecyclerView.Adapter<NotePublicAdapter.vi
                     }
                 });
 
-                Intent intent = new Intent(HomeActivity, NoteDetailsActivity.class);
+                Intent intent = new Intent(AdminTrips, Deleting.class);
                 intent.putExtra("title",note.getTitle());
                 intent.putExtra("content",note.getContent());
                 intent.putExtra("docId",docId);
@@ -96,7 +94,7 @@ public class NotePublicAdapter extends RecyclerView.Adapter<NotePublicAdapter.vi
                 intent.putExtra("sharerId",note.getSharerId());
                 intent.putExtra("noteIdToUpdate", noteIdToUpdate); // Pass the noteIdToUpdate as an extr
 
-                HomeActivity.startActivity(intent);
+                AdminTrips.startActivity(intent);
 
             }
         });

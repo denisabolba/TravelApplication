@@ -9,10 +9,12 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.PopupMenu;
 import android.widget.TextView;
 
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -50,10 +52,33 @@ public class ProfileActivity extends AppCompatActivity {
     Uri setImageUri;
     String email,password;
 
+    ImageView rightIcon,leftIcon;
+    TextView toolbarTitle;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile);
+
+
+        leftIcon = findViewById(R.id.left_icon);
+        rightIcon = findViewById(R.id.right_icon);
+        toolbarTitle = findViewById(R.id.toolbar_title);
+
+        leftIcon.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
+        rightIcon.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showMenu();
+            }
+        });
+
+        toolbarTitle.setText("Profile");
 
         editBtn = findViewById(R.id.edit_profile_button);
         setName = findViewById(R.id.profile_name);
@@ -100,6 +125,41 @@ public class ProfileActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 startActivity(new Intent(ProfileActivity.this,Setting.class));
+            }
+        });
+
+    }
+    void showMenu(){
+        PopupMenu popupMenu  = new PopupMenu(ProfileActivity.this,rightIcon);
+        popupMenu.getMenu().add("Home");
+        popupMenu.getMenu().add("Profile");
+        popupMenu.getMenu().add("Contact Support");
+        popupMenu.getMenu().add("Logout");
+        popupMenu.show();
+        popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem menuItem) {
+                if(menuItem.getTitle()=="Home"){
+                    FirebaseAuth.getInstance().signOut();
+                    startActivity(new Intent(ProfileActivity.this,HomeMenuActivity.class));
+                    finish();
+                    return true;
+                }
+                if(menuItem.getTitle()=="Logout"){
+                    FirebaseAuth.getInstance().signOut();
+                    startActivity(new Intent(ProfileActivity.this,LoginActivity.class));
+                    finish();
+                    return true;
+                }
+                if(menuItem.getTitle()=="Profile"){
+                    startActivity(new Intent(ProfileActivity.this,ProfileActivity.class));
+                    return true;
+                }
+                if(menuItem.getTitle()=="Contact Support"){
+                    startActivity(new Intent(ProfileActivity.this,ContactSupportActivity.class));
+                    return true;
+                }
+                return false;
             }
         });
 

@@ -8,10 +8,19 @@
     android:padding="16dp"
     tools:context=".NoteDetailsActivity">
 
+
+
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/title_bar_layout">
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/back_arrow"
+            android:id="@+id/back"
+            android:paddingEnd="10dp"/>
 
         <TextView
             android:id="@+id/page_title"
@@ -20,7 +29,8 @@
             android:text="Add New Trip"
             android:textColor="@color/white"
             android:textSize="24sp"
-            android:textStyle="bold" />
+            android:textStyle="bold"
+            android:layout_toEndOf="@+id/back"/>
 
         <ImageButton
             android:layout_width="36dp"

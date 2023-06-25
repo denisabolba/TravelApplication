@@ -12,7 +12,6 @@ import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.Switch;
-import android.widget.TextSwitcher;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -20,7 +19,6 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -89,14 +87,6 @@ public class LoginActivity extends AppCompatActivity {
             public void onComplete(@NonNull Task<AuthResult> task) {
                 changeInProgress(false);
                 if (task.isSuccessful()) {
-                    //login is success
-                    /*if(firebaseAuth.getCurrentUser().isEmailVerified()){
-                        //go to mainactivity
-                        startActivity(new Intent(LoginActivity.this,MainActivity.class));
-                        finish();
-                    }else{
-                        Utility.showToast(LoginActivity.this,"Email not verified, Please verify your email.");
-                    }*/
 
                     FirebaseDatabase database = FirebaseDatabase.getInstance();
                     String userId = firebaseAuth.getUid();
@@ -128,7 +118,7 @@ public class LoginActivity extends AppCompatActivity {
                         if (admins.equals("true")) {
 
                             Toast.makeText(LoginActivity.this, userId, Toast.LENGTH_SHORT).show();
-                            startActivity(new Intent(LoginActivity.this, AdminActivityUsers.class));
+                            startActivity(new Intent(LoginActivity.this, AdminHome.class));
                             finish();
                         } else {
                             Toast.makeText(LoginActivity.this, "User is not admin", Toast.LENGTH_SHORT).show();
@@ -138,7 +128,7 @@ public class LoginActivity extends AppCompatActivity {
                     } else {
 
                         Toast.makeText(LoginActivity.this, userId, Toast.LENGTH_SHORT).show();
-                        startActivity(new Intent(LoginActivity.this, HomeMenuActivity.class));
+                        startActivity(new Intent(LoginActivity.this, AdminHome.class));
                         finish();
                     }
 

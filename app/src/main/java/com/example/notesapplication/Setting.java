@@ -3,23 +3,31 @@ package com.example.notesapplication;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.view.GravityCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
 
 import android.annotation.SuppressLint;
+import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.PopupMenu;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -47,6 +55,11 @@ public class Setting extends AppCompatActivity {
     String email,password;
     String deleted = "";
     ProgressDialog progressDialog;
+    private DrawerLayout drawerLayout;
+    private ActionBarDrawerToggle drawerToggle;
+    private  NavigationView navigationView;
+    ImageView rightIcon,leftIcon;
+    TextView toolbarTitle;
 
 
 
@@ -54,6 +67,99 @@ public class Setting extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_setting);
+
+
+        leftIcon = findViewById(R.id.left_icon);
+        rightIcon = findViewById(R.id.right_icon);
+        toolbarTitle = findViewById(R.id.toolbar_title);
+
+        leftIcon.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
+        rightIcon.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showMenu();
+            }
+        });
+
+
+
+        drawerLayout = findViewById(R.id.drawer_layout);
+        drawerToggle = new ActionBarDrawerToggle(this, drawerLayout, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+        drawerLayout.addDrawerListener(drawerToggle);
+        drawerToggle.syncState();
+
+        navigationView = findViewById(R.id.nav_view);
+        navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                int id = item.getItemId();
+                switch (id) {
+                    case R.id.nav_home:
+                        // Handle Home selection
+                        Intent intent = new Intent(Setting.this, HomeMenuActivity.class);
+                        startActivity(intent);
+                        drawerLayout.closeDrawer(GravityCompat.START); // Close the drawer after handling the item selection
+                        return true;
+                    case R.id.nav_search:
+                        startActivity(new Intent(Setting.this, HomeActivity.class));
+                        drawerLayout.closeDrawer(GravityCompat.START);
+                        return true;
+                    case R.id.nav_trips:
+                        startActivity(new Intent(Setting.this, MainActivity.class));
+                        drawerLayout.closeDrawer(GravityCompat.START);
+                        return true;
+                    case R.id.nav_chat:
+                        startActivity(new Intent(Setting.this, MainActivity2.class));
+                        drawerLayout.closeDrawer(GravityCompat.START);
+                        return true;
+                    case R.id.nav_profile:
+                        startActivity(new Intent(Setting.this, ProfileActivity.class));
+                        drawerLayout.closeDrawer(GravityCompat.START);
+                        return true;
+                    case R.id.nav_terms:
+                        startActivity(new Intent(Setting.this, TermsActivity.class));
+                        drawerLayout.closeDrawer(GravityCompat.START);
+                        return true;
+                    case R.id.nav_contact:
+                        startActivity(new Intent(Setting.this, ContactSupportActivity.class));
+                        drawerLayout.closeDrawer(GravityCompat.START);
+                        return true;
+                    case R.id.nav_logout:
+                        Dialog dialog = new Dialog(Setting.this);
+                        dialog.setContentView(R.layout.dialog_layout);
+                        Button no, yes;
+                        yes = dialog.findViewById(R.id.yesbnt);
+                        no = dialog.findViewById(R.id.nobnt);
+                        yes.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                FirebaseAuth.getInstance().signOut();
+                                Intent intent = new Intent(Setting.this,LoginActivity.class);
+                                startActivity(intent);
+                            }
+                        });
+                        no.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                dialog.dismiss();
+                            }
+                        });
+                        dialog.show();
+                        drawerLayout.closeDrawer(GravityCompat.START);
+                        return true;
+
+                }
+                // Handle other menu item actions if required
+
+                return false;
+            }
+        });
+
 
         auth = FirebaseAuth.getInstance();
         database = FirebaseDatabase.getInstance();
@@ -258,5 +364,40 @@ public class Setting extends AppCompatActivity {
         mailAPI.execute();
     }
 
+    void showMenu(){
+        PopupMenu popupMenu  = new PopupMenu(Setting.this,rightIcon);
+        popupMenu.getMenu().add("Home");
+        popupMenu.getMenu().add("Profile");
+        popupMenu.getMenu().add("Contact Support");
+        popupMenu.getMenu().add("Logout");
+        popupMenu.show();
+        popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem menuItem) {
+                if(menuItem.getTitle()=="Home"){
+                    FirebaseAuth.getInstance().signOut();
+                    startActivity(new Intent(Setting.this,HomeMenuActivity.class));
+                    finish();
+                    return true;
+                }
+                if(menuItem.getTitle()=="Logout"){
+                    FirebaseAuth.getInstance().signOut();
+                    startActivity(new Intent(Setting.this,LoginActivity.class));
+                    finish();
+                    return true;
+                }
+                if(menuItem.getTitle()=="Profile"){
+                    startActivity(new Intent(Setting.this,ProfileActivity.class));
+                    return true;
+                }
+                if(menuItem.getTitle()=="Contact Support"){
+                    startActivity(new Intent(Setting.this,ContactSupportActivity.class));
+                    return true;
+                }
+                return false;
+            }
+        });
+
+    }
 
 }
