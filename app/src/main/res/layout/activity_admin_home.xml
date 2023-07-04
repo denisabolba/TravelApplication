@@ -14,7 +14,8 @@
         android:baselineAligned="false"
         android:orientation="horizontal"
         android:weightSum="10"
-        app:layout_constraintBaseline_toBaselineOf="parent">
+        app:layout_constraintBaseline_toBaselineOf="parent"
+        >
 
         <RelativeLayout
             android:id="@+id/relative"
@@ -41,6 +42,9 @@
                 android:gravity="center"
                 android:text="Admin Center"
                 android:textSize="20sp" />
+
+
+
         </RelativeLayout>
 
         <GridLayout
@@ -137,7 +141,16 @@
 
         </GridLayout>
 
-
+        <ImageView
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:id="@+id/logout_btn"
+            android:layout_marginTop="520dp"
+            android:layout_marginStart="165dp"
+            android:src="@drawable/ic_notification"
+            android:tint="@color/white"
+            android:background="@color/my_primary"
+            />
     </RelativeLayout>
 
 
