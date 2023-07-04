@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">NotesApplication</string>
+    <string name="app_name">TravelPartners</string>
     <string name="API_key">AIzaSyDUTDttShqgiPpZEOU7KETb3j9fi8X9Wr4</string>
 
     <string name="navigation_drawer_open">Open navigation drawer</string>
