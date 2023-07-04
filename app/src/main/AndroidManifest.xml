@@ -20,6 +20,33 @@
         android:theme="@style/Theme.NotesApplication"
         tools:targetApi="31">
         <activity
+            android:name=".EgyptActivity"
+            android:exported="false" />
+        <activity
+            android:name=".MaltaActivity"
+            android:exported="false" />
+        <activity
+            android:name=".TenerifeActivity"
+            android:exported="false" />
+        <activity
+            android:name=".CretaActivity"
+            android:exported="false" />
+        <activity
+            android:name=".BarcelonaActivity"
+            android:exported="false" />
+        <activity
+            android:name=".LondraActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ParisActivity"
+            android:exported="false" />
+        <activity
+            android:name=".RomaActivity"
+            android:exported="false" />
+        <activity
+            android:name=".PrivacyPolicyActivity"
+            android:exported="false" />
+        <activity
             android:name=".AdminChatWindow"
             android:exported="false" />
         <activity
